@@ -3,8 +3,8 @@ import "./theme-config.css";
 import "./globals.css";
 import type { Metadata } from "next";
 import { Inter } from "next/font/google";
+import { Theme } from "@radix-ui/themes";
 import NavBar from "./NavBar";
-import { Theme, ThemePanel } from "@radix-ui/themes";
 
 const inter = Inter({
   subsets: ["latin"],
