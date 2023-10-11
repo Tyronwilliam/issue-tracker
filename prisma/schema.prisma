@@ -9,3 +9,8 @@ datasource db {
   provider = "mysql"
   url      = env("DATABASE_URL")
 }
+
+model Issue {
+  id  Int  @id @default(autoincrement())
+  title String  //varchar (191)
+}
