@@ -6,7 +6,7 @@ const EditIssueButton = ({ issueId }: { issueId: number }) => {
   return (
     <Button>
       <Pencil2Icon />
-      <Link href={`/issues/${issueId}/edit`}>Editer la tâche</Link>
+      <Link href={`/issues/${issueId}/edit`}>Editer tâche</Link>
     </Button>
   );
 };
