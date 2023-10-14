@@ -1,10 +1,5 @@
 "use client";
-import Link from "next/link";
-import { usePathname } from "next/navigation";
-import React from "react";
-import { AiFillBug } from "react-icons/ai";
-import classnames from "classnames";
-import { useSession } from "next-auth/react";
+import { Skeleton } from "@/app/components";
 import {
   Avatar,
   Box,
@@ -13,7 +8,11 @@ import {
   Flex,
   Text,
 } from "@radix-ui/themes";
-import { signOut } from "next-auth/react";
+import classnames from "classnames";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { usePathname } from "next/navigation";
+import { AiFillBug } from "react-icons/ai";
 
 const links = [
   {
@@ -65,7 +64,7 @@ const AuthStatus = ({}) => {
 
   const { data: session, status } = useSession();
 
-  if (status === "loading") return null;
+  if (status === "loading") return <Skeleton width="3rem" />;
 
   if (status === "unauthenticated") {
     return (
