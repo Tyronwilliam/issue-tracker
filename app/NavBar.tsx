@@ -27,7 +27,6 @@ const links = [
 ];
 const NavBar = () => {
   const currentPath = usePathname();
-  const { data: session, status } = useSession();
   return (
     <nav className="border-b mb-5 px-5 py-5">
       <Container>
@@ -42,9 +41,8 @@ const NavBar = () => {
                   <Link
                     href={link.href}
                     className={classnames({
-                      "text-zinc-900": link.href === currentPath,
-                      "text-zinc-500 ": link.href !== currentPath,
-                      "hover:text-zinc-800 transition-colors": true,
+                      "nav-link": true,
+                      "!text-zinc-900": link.href === currentPath,
                     })}
                   >
                     {link.label}
@@ -53,42 +51,7 @@ const NavBar = () => {
               ))}
             </ul>
           </Flex>
-          <Box>
-            {status === "authenticated" && (
-              <DropdownMenu.Root>
-                <DropdownMenu.Trigger>
-                  <Avatar
-                    fallback="?"
-                    src={session.user!.image!}
-                    radius="full"
-                    size="2"
-                    className="cursor-pointer"
-                  />
-                </DropdownMenu.Trigger>
-                <DropdownMenu.Content>
-                  <DropdownMenu.Label>
-                    <Text size="2">{session.user!.email}</Text>
-                  </DropdownMenu.Label>
-                  <DropdownMenu.Item>
-                    <Link href="/api/auth/signout">Déconnexion</Link>
-                  </DropdownMenu.Item>
-                </DropdownMenu.Content>
-              </DropdownMenu.Root>
-            )}
-
-            {status === "unauthenticated" && (
-              <Link
-                href="/api/auth/signin"
-                className={classnames({
-                  "text-zinc-900": "/api/auth/signin" === currentPath,
-                  "text-zinc-500 ": "/api/auth/signin" !== currentPath,
-                  "hover:text-zinc-800 transition-colors": true,
-                })}
-              >
-                Connexion
-              </Link>
-            )}
-          </Box>
+          <AuthStatus />
         </Flex>
       </Container>
     </nav>
@@ -96,3 +59,50 @@ const NavBar = () => {
 };
 
 export default NavBar;
+
+const AuthStatus = ({}) => {
+  const currentPath = usePathname();
+
+  const { data: session, status } = useSession();
+
+  if (status === "loading") return null;
+
+  if (status === "unauthenticated") {
+    return (
+      <Link
+        href="/api/auth/signin"
+        className={classnames({
+          "nav-link": true,
+          "!text-zinc-900": "/api/auth/signin" === currentPath,
+        })}
+      >
+        Connexion
+      </Link>
+    );
+  }
+
+  return (
+    <Box>
+      <DropdownMenu.Root>
+        <DropdownMenu.Trigger>
+          <Avatar
+            fallback="?"
+            src={session!.user!.image!}
+            radius="full"
+            size="2"
+            className="cursor-pointer"
+            referrerPolicy="no-referrer"
+          />
+        </DropdownMenu.Trigger>
+        <DropdownMenu.Content>
+          <DropdownMenu.Label>
+            <Text size="2">{session!.user!.email}</Text>
+          </DropdownMenu.Label>
+          <DropdownMenu.Item>
+            <Link href="/api/auth/signout">Déconnexion</Link>
+          </DropdownMenu.Item>
+        </DropdownMenu.Content>
+      </DropdownMenu.Root>
+    </Box>
+  );
+};
