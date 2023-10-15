@@ -15,11 +15,11 @@ const AssignSelect = () => {
     fetchUser();
   }, []);
   return (
-    <Select.Root defaultValue="">
-      <Select.Trigger />
+    <Select.Root>
+      <Select.Trigger placeholder="Assigner tâche" />
       <Select.Content>
         <Select.Group>
-          <Select.Label>Suggestion</Select.Label>
+          <Select.Label>Suggestions</Select.Label>
           {users.length > 0 &&
             users.map((user) => (
               <Select.Item value={user.id} key={user.id}>
