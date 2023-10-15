@@ -8,7 +8,7 @@ export async function PATCH(
   { params }: { params: { id: string } }
 ) {
   const session = await getServerSession(authOptions);
-  // if (!session) return NextResponse.json({}, { status: 401 });
+  if (!session) return NextResponse.json({}, { status: 401 });
 
   const body = await request.json();
   const validationIssue = patchIssueSchema.safeParse(body);
@@ -23,14 +23,13 @@ export async function PATCH(
     const user = await prisma.user.findUnique({
       where: { id: assignToUserId },
     });
-    if (!user) {
+    if (!user)
       return NextResponse.json(
         { error: "Invalid user." },
         {
           status: 400,
         }
       );
-    }
   }
   const issue = await prisma.issue.findUnique({
     where: { id: parseInt(params.id) },

@@ -1,11 +1,11 @@
 "use client";
-import { User } from "@prisma/client";
+import { Issue, User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Skeleton } from "@/app/components";
 
-const AssignSelect = () => {
+const AssignSelect = ({ issue }: { issue: Issue }) => {
   const {
     data: users,
     error,
@@ -20,11 +20,19 @@ const AssignSelect = () => {
   if (isLoading) return <Skeleton height="2rem" />;
   if (error) return null;
   return (
-    <Select.Root>
-      <Select.Trigger placeholder="Assigner tâche" />
+    <Select.Root
+      defaultValue={issue.assignToUserId || "remove"}
+      onValueChange={(userId) => {
+        axios.patch("/api/issues/" + issue.id, {
+          assignToUserId: userId == "remove" ? null : userId,
+        });
+      }}
+    >
+      <Select.Trigger placeholder={"Attribuer tâche"} />
       <Select.Content>
         <Select.Group>
-          <Select.Label>Suggestions</Select.Label>
+          <Select.Label>Suggestions</Select.Label>{" "}
+          <Select.Item value="remove">Désassigner</Select.Item>
           {users?.map((user) => (
             <Select.Item value={user.id} key={user.id}>
               {user.name}
