@@ -1,12 +1,9 @@
-import { Button } from "@radix-ui/themes";
-import Link from "next/link";
+import Pagination from "./components/Pagination";
 
 export default function Home() {
   return (
     <main>
-      <Button>
-        <Link href="/issues/new">Nouvelle tache</Link>
-      </Button>
+      <Pagination itemCount={100} pageSize={10} currentPage={1} />
     </main>
   );
 }
