@@ -14,19 +14,23 @@ interface Props {
   currentPage: number;
 }
 const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
-  const searchParams = useSearchParams();
   const router = useRouter();
+
   const pageCount = Math.ceil(itemCount / pageSize);
   if (pageCount <= 1) return null;
 
   const changePage = (page: number) => {
     const params = new URLSearchParams();
+
     params.set("page", page.toString());
-    router.push("?" + params.toString());
+    const query = "?" + params.toString();
+    router.push("/issues/list" + query);
   };
   return (
     <Flex align={"center"} gap="2">
-      <Text size={"2"}>Page {currentPage} sur</Text>
+      <Text size={"2"}>
+        Page {currentPage} sur {pageCount}
+      </Text>
       <Button
         color="gray"
         variant="soft"

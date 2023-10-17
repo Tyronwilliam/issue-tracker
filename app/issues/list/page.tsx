@@ -6,10 +6,11 @@ import IssueFilter from "./IssueFilter";
 import { Issue, Status } from "@prisma/client";
 import NextLink from "next/link";
 import { CaretSortIcon } from "@radix-ui/react-icons";
+import Pagination from "@/app/components/Pagination";
 const IssuesPage = async ({
   searchParams,
 }: {
-  searchParams: { status: Status; orderBy: keyof Issue };
+  searchParams: { status: Status; orderBy: keyof Issue; page: string };
 }) => {
   const columns: { label: string; value: keyof Issue; className?: string }[] = [
     { label: "Tache", value: "title" },
@@ -21,10 +22,15 @@ const IssuesPage = async ({
     },
   ];
 
+  const page = parseInt(searchParams.page) || 1;
+  const pageSize = 10;
+
   const statuses = Object.values(Status);
   const status = statuses.includes(searchParams.status)
     ? searchParams.status
     : undefined;
+
+  const where = { status };
 
   const orderBy = columns
     .map((column) => column.value)
@@ -33,10 +39,13 @@ const IssuesPage = async ({
     : undefined;
 
   const issues = await prisma.issue.findMany({
-    where: { status: status },
+    where,
     orderBy,
+    skip: (page - 1) * pageSize,
+    take: pageSize,
   });
 
+  const issueCount = await prisma.issue.count({ where });
   return (
     <div>
       <Flex mb="5" justify="between">
@@ -87,6 +96,11 @@ const IssuesPage = async ({
           ))}
         </Table.Body>
       </Table.Root>
+      <Pagination
+        itemCount={issueCount}
+        pageSize={pageSize}
+        currentPage={page}
+      />
     </div>
   );
 };
