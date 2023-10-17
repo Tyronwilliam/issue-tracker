@@ -8,10 +8,11 @@ export interface IssueQuery {
   status: Status;
   orderBy: keyof Issue;
   page: string;
+  user: string;
 }
 interface Props {
   searchParams: IssueQuery;
-  issues: Issue[];
+  issues?: Issue[];
 }
 
 const IssueTable = ({ searchParams, issues }: Props) => {

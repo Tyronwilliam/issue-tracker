@@ -17,7 +17,7 @@ import { AiFillBug } from "react-icons/ai";
 const links = [
   {
     label: "Dashboard",
-    href: "/",
+    href: "/dashboard",
   },
   {
     label: "Issues",
@@ -31,7 +31,7 @@ const NavBar = () => {
       <Container>
         <Flex align="center" justify="between">
           <Flex align="center" gap="5">
-            <Link href="/">
+            <Link href="/dashboard">
               <AiFillBug />
             </Link>
             <ul className="flex space-x-6">
