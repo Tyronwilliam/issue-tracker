@@ -14,3 +14,8 @@ export const patchIssueSchema = z.object({
     .optional()
     .nullable(),
 });
+
+export const projectSchema = z.object({
+  title: z.string().min(1, "Title is requiered").max(50, "50 caracter maximum"),
+  userId: z.string().min(1, "User id is requiered").max(255),
+});
