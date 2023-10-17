@@ -15,7 +15,7 @@ const AssignSelect = ({ issue }: { issue: Issue }) => {
   const onChangeUser = async (userId: string) => {
     try {
       await axios.patch("/api/issues/" + issue.id, {
-        assignToUserId: userId == "remove" ? null : userId,
+        userId: userId == "remove" ? null : userId,
       });
       toast.success("C'est fait !");
     } catch (error) {
@@ -26,7 +26,7 @@ const AssignSelect = ({ issue }: { issue: Issue }) => {
     <>
       <Toaster />
       <Select.Root
-        defaultValue={issue.assignToUserId || "remove"}
+        defaultValue={issue.userId || "remove"}
         onValueChange={(userId) => onChangeUser(userId)}
       >
         <Select.Trigger placeholder={"Attribuer tâche"} />

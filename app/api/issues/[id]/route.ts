@@ -7,8 +7,8 @@ export async function PATCH(
   request: NextRequest,
   { params }: { params: { id: string } }
 ) {
-  const session = await getServerSession(authOptions);
-  if (!session) return NextResponse.json({}, { status: 401 });
+  // const session = await getServerSession(authOptions);
+  // if (!session) return NextResponse.json({}, { status: 401 });
 
   const body = await request.json();
   const validationIssue = patchIssueSchema.safeParse(body);
@@ -18,10 +18,10 @@ export async function PATCH(
       status: 400,
     });
   }
-  const { assignToUserId, description, title } = body;
-  if (assignToUserId) {
+  const { userId, description, title } = body;
+  if (userId) {
     const user = await prisma.user.findUnique({
-      where: { id: assignToUserId },
+      where: { id: userId },
     });
     if (!user)
       return NextResponse.json(
@@ -33,17 +33,29 @@ export async function PATCH(
   }
   const issue = await prisma.issue.findUnique({
     where: { id: parseInt(params.id) },
+    include: {
+      assignees: true,
+    },
   });
 
   if (!issue)
     return NextResponse.json({ error: "Invalid id" }, { status: 404 });
 
+  const existingAssignees = issue.assignees.map((assignee) => assignee.userId);
+  if (!existingAssignees.includes(userId)) {
+    await prisma.issueAssignee.create({
+      data: {
+        issueId: parseInt(params.id),
+        userId,
+      },
+    });
+  }
   const updateIssue = await prisma.issue.update({
     where: { id: issue.id },
     data: {
       title,
       description,
-      assignToUserId,
+      userId,
     },
   });
   return NextResponse.json(updateIssue, { status: 200 });
