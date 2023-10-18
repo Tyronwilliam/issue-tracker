@@ -6,7 +6,24 @@ import IssueAction from "./IssueAction";
 import IssueFilterStatut from "./IssueFilterStatut";
 import IssueFilterUser from "./IssueFilterUser";
 import IssueTable, { IssueQuery, columnName } from "./IssueTable";
+import ProjectFilter from "@/app/dashboard/ProjectFilter";
+import { getProjectsAssociatedWithUser } from "@/app/utils/service/userRelation";
+import { getServerSession } from "next-auth";
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
+  const session = await getServerSession(authOptions);
+
+  const projectsAssociatedWithUser = await getProjectsAssociatedWithUser(
+    session
+  );
+  const projectId = parseInt(searchParams.projectId);
+
+  const isIndexValid = projectsAssociatedWithUser[projectId] !== undefined;
+
+  const realId = isIndexValid
+    ? projectsAssociatedWithUser[projectId].id
+    : undefined;
+
   const page = parseInt(searchParams.page) || 1;
   const pageSize = 10;
 
@@ -24,6 +41,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
     where: {
       status,
       userId,
+      projectId: realId,
     },
     orderBy,
     skip: (page - 1) * pageSize,
@@ -36,6 +54,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
     where: {
       status,
       userId,
+      projectId: realId,
     },
   });
   return (
@@ -52,6 +71,10 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
         >
           <IssueFilterStatut />
           <IssueFilterUser users={users} />
+          <ProjectFilter
+            projects={projectsAssociatedWithUser}
+            selectAll={true}
+          />
         </Flex>
         <IssueAction />
       </Flex>

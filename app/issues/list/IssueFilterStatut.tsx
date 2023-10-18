@@ -1,4 +1,5 @@
 "use client";
+import { createURLParams } from "@/app/utils/service/parameterUrl";
 import { Status } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -15,22 +16,19 @@ const IssueFilterStatut = () => {
   const searchParams = useSearchParams();
   const orderBy = searchParams.get("orderBy");
   const user = searchParams.get("user");
+  const project = searchParams.get("projectId");
   return (
     <Select.Root
       defaultValue={searchParams.get("status") || undefined}
       onValueChange={(status) => {
-        const params = new URLSearchParams();
-        if (status) {
-          params.append("status", status);
-        }
-        if (orderBy) {
-          params.append("orderBy", orderBy);
-        }
-        if (user) {
-          params.append("user", user);
-        }
-
-        router.push("/issues/list" + "?" + params.toString());
+        const paramsObject = {
+          status,
+          user,
+          orderBy,
+          projectId: project,
+        };
+        const paramsString = createURLParams(paramsObject);
+        router.push("/issues/list" + "?" + paramsString);
       }}
     >
       <Select.Trigger radius="large" placeholder="Trier par statut" />

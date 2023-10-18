@@ -1,4 +1,5 @@
 "use client";
+import { createURLParams } from "@/app/utils/service/parameterUrl";
 import { User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
@@ -9,22 +10,20 @@ const IssueFilterUser = ({ users }: { users: User[] }) => {
   const searchParams = useSearchParams();
   const orderBy = searchParams.get("orderBy");
   const status = searchParams.get("status");
+  const project = searchParams.get("projectId");
 
   return (
     <Select.Root
       defaultValue={"ALL" || undefined}
       onValueChange={(user) => {
-        const params = new URLSearchParams();
-        if (user !== "ALL") {
-          params.append("user", user);
-        }
-        if (orderBy) {
-          params.append("orderBy", orderBy);
-        }
-        if (status) {
-          params.append("status", status);
-        }
-        router.push("/issues/list" + "?" + params.toString());
+        const paramsObject = {
+          status,
+          user,
+          orderBy,
+          projectId: project,
+        };
+        const paramsString = createURLParams(paramsObject);
+        router.push("/issues/list" + "?" + paramsString);
       }}
     >
       <Select.Trigger radius="large" placeholder="Trier par collaborateur" />

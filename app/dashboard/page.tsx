@@ -7,6 +7,7 @@ import IssueSummary from "./IssueSummary";
 import LatestIssue from "./LatestIssue";
 import ProjectFilter from "./ProjectFilter";
 import { IssueStatusBadge } from "../components";
+import { getProjectsAssociatedWithUser } from "../utils/service/userRelation";
 
 interface Props {
   searchParams: { project: string };
@@ -14,15 +15,9 @@ interface Props {
 const Dashboard = async ({ searchParams }: Props) => {
   const session = await getServerSession(authOptions);
 
-  const projectsAssociatedWithUser = await prisma.project.findMany({
-    where: {
-      user: {
-        some: {
-          email: session?.user?.email,
-        },
-      },
-    },
-  });
+  const projectsAssociatedWithUser = await getProjectsAssociatedWithUser(
+    session
+  );
   const paramsToId = parseInt(searchParams.project);
 
   const isIndexValid = projectsAssociatedWithUser[paramsToId] !== undefined;
@@ -32,7 +27,7 @@ const Dashboard = async ({ searchParams }: Props) => {
     : projectsAssociatedWithUser.indexOf(
         projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1]
       );
-  const projectId = searchParams.project
+  const projectId = isIndexValid
     ? projectsAssociatedWithUser[paramsToId].id
     : projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].id;
 
@@ -71,6 +66,7 @@ const Dashboard = async ({ searchParams }: Props) => {
         <ProjectFilter
           projects={projectsAssociatedWithUser}
           lastProject={lastProjectId}
+          selectAll={false}
         />
       </Flex>
       <Grid columns={{ initial: "1", md: "2" }} gap={"5"}>

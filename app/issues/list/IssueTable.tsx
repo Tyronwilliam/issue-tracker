@@ -9,6 +9,7 @@ export interface IssueQuery {
   orderBy: keyof Issue;
   page: string;
   user: string;
+  projectId: string;
 }
 interface Props {
   searchParams: IssueQuery;
