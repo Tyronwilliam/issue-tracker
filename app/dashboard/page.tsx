@@ -8,6 +8,7 @@ import LatestIssue from "./LatestIssue";
 import ProjectFilter from "./ProjectFilter";
 import { IssueStatusBadge } from "../components";
 import { getProjectsAssociatedWithUser } from "../utils/service/userRelation";
+import { CreateProject } from "./CreateProject";
 
 interface Props {
   searchParams: { project: string };
@@ -18,6 +19,9 @@ const Dashboard = async ({ searchParams }: Props) => {
   const projectsAssociatedWithUser = await getProjectsAssociatedWithUser(
     session
   );
+  if (projectsAssociatedWithUser?.length === 0)
+    return <CreateProject session={session} />;
+
   const paramsToId = parseInt(searchParams.project);
 
   const isIndexValid = projectsAssociatedWithUser[paramsToId] !== undefined;
@@ -38,6 +42,7 @@ const Dashboard = async ({ searchParams }: Props) => {
   const status = isIndexValid
     ? projectsAssociatedWithUser[paramsToId]?.status
     : projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].status;
+
   const open = await prisma.issue.count({
     where: {
       status: "OPEN",
@@ -56,6 +61,7 @@ const Dashboard = async ({ searchParams }: Props) => {
       projectId: projectId,
     },
   });
+
   return (
     <>
       <Flex justify="between" align={"center"} mb={"5"}>

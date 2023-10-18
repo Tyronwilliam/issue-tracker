@@ -33,23 +33,11 @@ export async function PATCH(
   }
   const issue = await prisma.issue.findUnique({
     where: { id: parseInt(params.id) },
-    include: {
-      assignees: true,
-    },
   });
 
   if (!issue)
     return NextResponse.json({ error: "Invalid id" }, { status: 404 });
 
-  const existingAssignees = issue.assignees.map((assignee) => assignee.userId);
-  if (!existingAssignees.includes(userId)) {
-    await prisma.issueAssignee.create({
-      data: {
-        issueId: parseInt(params.id),
-        userId,
-      },
-    });
-  }
   const updateIssue = await prisma.issue.update({
     where: { id: issue.id },
     data: {

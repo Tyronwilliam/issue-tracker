@@ -1,8 +1,8 @@
+import { IssueStatusBadge } from "@/app/components";
 import prisma from "@/prisma/client";
 import { Avatar, Card, Flex, Heading, Table } from "@radix-ui/themes";
-import { IssueStatusBadge } from "@/app/components";
-import React from "react";
 import NextLink from "next/link";
+import CreateIssueUI from "../components/CreateIssueUI";
 const LatestIssue = async ({ projectId }: { projectId: number }) => {
   const latestIssues = await prisma.issue.findMany({
     where: { projectId: projectId },
@@ -10,19 +10,16 @@ const LatestIssue = async ({ projectId }: { projectId: number }) => {
     orderBy: { createdAt: "desc" },
     take: 5,
     include: {
-      assignees: {
-        include: {
-          user: true, // Inclure toutes les propriétés de l'utilisateur
-        },
-      },
+      users: true,
     },
   });
-
   return (
     <Card>
       <Heading size="4" mb="5" ml="2">
         Dernière Tâches
       </Heading>
+
+      {latestIssues.length === 0 && <CreateIssueUI />}
       <Table.Root>
         <Table.Body>
           {latestIssues?.map((issue) => {
@@ -40,12 +37,12 @@ const LatestIssue = async ({ projectId }: { projectId: number }) => {
                       <IssueStatusBadge status={issue.status} />
                     </Flex>
                     <Flex gap={"2"}>
-                      {issue.assignees.map((assignee) => {
+                      {issue.users.map((user) => {
                         return (
-                          assignee.user.image && (
+                          user.image && (
                             <Avatar
-                              key={assignee.user.id}
-                              src={assignee.user.image || undefined}
+                              key={user.id}
+                              src={user.image || undefined}
                               fallback="?"
                               radius="full"
                               size="2"

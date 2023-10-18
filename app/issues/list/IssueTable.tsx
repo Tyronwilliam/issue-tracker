@@ -70,7 +70,9 @@ const IssueTable = ({ searchParams, issues }: Props) => {
                 <Table.Cell className="hidden md:table-cell">
                   {formatDate}
                 </Table.Cell>
-                <Table.Cell>{issue.Project && issue.Project.title}</Table.Cell>
+                <Table.Cell className="hidden md:table-cell">
+                  {issue.Project && issue.Project.title}
+                </Table.Cell>
               </Table.Row>
             );
           })}
@@ -90,7 +92,7 @@ const columns: { label: string; value: keyof Issue; className?: string }[] = [
   {
     label: "Projet",
     value: "title",
-    // className: "hidden md:table-cell",
+    className: "hidden md:table-cell",
   },
 ];
 

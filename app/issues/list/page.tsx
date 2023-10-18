@@ -14,6 +14,7 @@ import ProjectFilter from "@/app/dashboard/ProjectFilter";
 import { getProjectsAssociatedWithUser } from "@/app/utils/service/userRelation";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import CreateIssueUI from "@/app/components/CreateIssueUI";
 const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
   const session = await getServerSession(authOptions);
 
@@ -40,11 +41,16 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
   const orderBy = columnName.includes(searchParams.orderBy)
     ? { [searchParams.orderBy]: "asc" }
     : undefined;
+  const users = {
+    some: {
+      id: userId,
+    },
+  };
 
   const issues = (await prisma.issue.findMany({
     where: {
       status,
-      userId,
+      users,
       projectId: realId,
     },
     orderBy,
@@ -54,43 +60,49 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
       Project: true,
     },
   })) as IssueWithProject[];
-  const users = await prisma.user.findMany({ orderBy: { name: "asc" } });
+  const allUsers = await prisma.user.findMany({ orderBy: { name: "asc" } });
 
   const issueCount = await prisma.issue.count({
     where: {
       status,
-      userId,
+      users,
       projectId: realId,
     },
   });
   return (
-    <Flex direction="column" gap="5">
-      <Flex
-        justify="between"
-        direction={{ initial: "column", sm: "row" }}
-        gap={"2"}
-      >
-        <Flex
-          gap={"2"}
-          direction={{ initial: "column", sm: "row" }}
-          align={"start"}
-        >
-          <IssueFilterStatut />
-          <IssueFilterUser users={users} />
-          <ProjectFilter
-            projects={projectsAssociatedWithUser}
-            selectAll={true}
+    <>
+      {issues.length === 0 ? (
+        <CreateIssueUI />
+      ) : (
+        <Flex direction="column" gap="5">
+          <Flex
+            justify="between"
+            direction={{ initial: "column", sm: "row" }}
+            gap={"2"}
+          >
+            <Flex
+              gap={"2"}
+              direction={{ initial: "column", sm: "row" }}
+              align={"start"}
+            >
+              <IssueFilterStatut />
+              <IssueFilterUser users={allUsers} />
+              <ProjectFilter
+                projects={projectsAssociatedWithUser}
+                selectAll={true}
+              />
+            </Flex>
+            <IssueAction />
+          </Flex>
+          <IssueTable searchParams={searchParams} issues={issues} />
+          <Pagination
+            itemCount={issueCount}
+            pageSize={pageSize}
+            currentPage={page}
           />
         </Flex>
-        <IssueAction />
-      </Flex>
-      <IssueTable searchParams={searchParams} issues={issues} />
-      <Pagination
-        itemCount={issueCount}
-        pageSize={pageSize}
-        currentPage={page}
-      />
-    </Flex>
+      )}
+    </>
   );
 };
 

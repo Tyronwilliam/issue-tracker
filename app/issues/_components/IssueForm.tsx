@@ -6,6 +6,7 @@ import { Issue } from "@prisma/client";
 import { Box, Button, Callout, TextField } from "@radix-ui/themes";
 import axios from "axios";
 import "easymde/dist/easymde.min.css";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { Controller, useForm } from "react-hook-form";
@@ -25,15 +26,20 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
     resolver: zodResolver(issueSchema),
   });
   const router = useRouter();
-
+  const { data: session } = useSession();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
   const onSubmit = handleSubmit(async (data) => {
     try {
       setIsSubmitting(true);
-      if (issue) await axios.patch(`/api/issues/${issue.id}`, data);
-      else await axios.post("/api/issues", data);
+      if (issue) {
+        await axios.patch(`/api/issues/${issue.id}`, data);
+      } else {
+        data.projectId = 6;
+        data.userId = session?.user?.id;
+        await axios.post("/api/issues", data);
+      }
       router.push("/issues/list");
       router.refresh();
     } catch (error) {

@@ -59,7 +59,7 @@ const NavBar = () => {
 
 export default NavBar;
 
-const AuthStatus = ({}) => {
+const AuthStatus = () => {
   const currentPath = usePathname();
 
   const { data: session, status } = useSession();
