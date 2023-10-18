@@ -69,9 +69,17 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
       projectId: realId,
     },
   });
+
+  const allIssueFromUser = await prisma.issue.findMany({
+    take: 5,
+    where: {
+      users,
+    },
+  });
+  
   return (
     <>
-      {issues.length === 0 ? (
+      {allIssueFromUser.length === 0 ? (
         <CreateIssueUI />
       ) : (
         <Flex direction="column" gap="5">

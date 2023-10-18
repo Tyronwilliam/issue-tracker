@@ -1,5 +1,6 @@
 "use client";
 import { ErrorMessage, Spinner } from "@/app/components";
+import { useProjectContext } from "@/app/hooks/useProjectContext";
 import { issueSchema } from "@/app/validationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Issue } from "@prisma/client";
@@ -27,6 +28,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
   });
   const router = useRouter();
   const { data: session } = useSession();
+  const { projectId } = useProjectContext();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,7 +38,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
       if (issue) {
         await axios.patch(`/api/issues/${issue.id}`, data);
       } else {
-        data.projectId = 6;
+        data.projectId = projectId || undefined;
         data.userId = session?.user?.id;
         await axios.post("/api/issues", data);
       }
@@ -47,6 +49,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
       setError("An unexpected error occurred");
     }
   });
+
   return (
     <Box className="max-w-xl space-y-2">
       {error && (

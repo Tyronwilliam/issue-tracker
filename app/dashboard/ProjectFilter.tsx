@@ -4,6 +4,7 @@ import { Select } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 import { createURLParams } from "../utils/service/parameterUrl";
+import { useProjectContext } from "../hooks/useProjectContext";
 
 interface Props {
   projects: Project[];
@@ -12,12 +13,15 @@ interface Props {
 }
 const ProjectFilter = ({ projects, lastProject, selectAll }: Props) => {
   const router = useRouter();
+  const { setProjectId } = useProjectContext();
+
   const searchParams = useSearchParams();
   const orderBy = searchParams.get("orderBy");
   const user = searchParams.get("user");
   const status = searchParams.get("status");
 
   const handleFilterByProject = (project: string) => {
+    setProjectId(parseInt(project));
     if (selectAll) {
       const paramsObject = {
         status,

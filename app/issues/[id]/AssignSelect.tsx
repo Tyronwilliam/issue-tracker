@@ -6,7 +6,8 @@ import axios from "axios";
 import { Skeleton } from "@/app/components";
 import toast, { Toaster } from "react-hot-toast";
 
-const AssignSelect = ({ issue }: { issue: Issue }) => {
+export type IssueWithUsers = Omit<Issue, "User"> & { users?: User[] };
+const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
   const { data: users, error, isLoading } = useUser();
 
   if (isLoading) return <Skeleton height="2rem" />;
@@ -26,19 +27,32 @@ const AssignSelect = ({ issue }: { issue: Issue }) => {
     <>
       <Toaster />
       <Select.Root
-        defaultValue={issue.userId || "remove"}
+        // defaultValue={ || undefined}
         onValueChange={(userId) => onChangeUser(userId)}
       >
         <Select.Trigger placeholder={"Attribuer tâche"} />
         <Select.Content>
           <Select.Group>
-            <Select.Label>Suggestions</Select.Label>{" "}
-            <Select.Item value="remove">Désassigner</Select.Item>
-            {users?.map((user) => (
-              <Select.Item value={user.id} key={user.id}>
+            <Select.Label>Attribué à</Select.Label>
+            {issue?.users?.map((user) => (
+              <Select.Item value={user.id} key={user.id} disabled>
                 {user.name}
               </Select.Item>
             ))}
+          </Select.Group>
+          <Select.Separator />
+          <Select.Group>
+            <Select.Label>Suggestions</Select.Label>
+            <Select.Item value="remove">Retirer</Select.Item>
+            {users?.map((user) =>
+              issue?.users?.map((second_user) =>
+                user?.id === second_user?.id ? null : (
+                  <Select.Item value={user.id} key={user.id} disabled>
+                    {user.name}
+                  </Select.Item>
+                )
+              )
+            )}
           </Select.Group>
         </Select.Content>
       </Select.Root>

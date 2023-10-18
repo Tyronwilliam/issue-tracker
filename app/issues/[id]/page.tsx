@@ -6,20 +6,30 @@ import EditIssueButton from "./EditIssueButton";
 import IssueDetail from "./IssueDetail";
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import AssignSelect from "./AssignSelect";
+import AssignSelect, { IssueWithUsers } from "./AssignSelect";
 
 interface Props {
   params: { id: string };
 }
 const IssueDetailPage = async ({ params }: Props) => {
   const session = await getServerSession(authOptions);
+  const users = {
+    some: {
+      id: session?.user?.id,
+    },
+  };
   const issue = await prisma.issue.findUnique({
     where: { id: parseInt(params.id) },
+    include: {
+      users: true,
+    },
   });
 
   if (!issue) {
     notFound();
   }
+
+  console.log(issue, "HELLO");
   return (
     <Grid columns={{ initial: "1", sm: "5" }} gap="5">
       <Box className="md:col-span-4">

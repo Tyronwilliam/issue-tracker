@@ -7,6 +7,7 @@ import { Container, Theme } from "@radix-ui/themes";
 import NavBar from "./NavBar";
 import AuthProvider from "./auth/Provider";
 import QueryClientProvider from "./QueryClientProvider";
+import { ProjectContextProvider } from "./hooks/useProjectContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -29,12 +30,14 @@ export default function RootLayout({
       <body className={inter.variable}>
         <AuthProvider>
           <QueryClientProvider>
-            <Theme accentColor="purple">
-              <NavBar />
-              <main className="p-5">
-                <Container>{children}</Container>
-              </main>
-            </Theme>
+            <ProjectContextProvider>
+              <Theme accentColor="purple">
+                <NavBar />
+                <main className="p-5">
+                  <Container>{children}</Container>
+                </main>
+              </Theme>
+            </ProjectContextProvider>
           </QueryClientProvider>
         </AuthProvider>
       </body>
