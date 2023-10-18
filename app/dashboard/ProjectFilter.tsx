@@ -35,7 +35,7 @@ const ProjectFilter = ({ projects, lastProject, selectAll }: Props) => {
   };
   return (
     <Select.Root
-      defaultValue={lastProject?.toString() || "ALL"}
+      defaultValue={lastProject?.toString() || undefined}
       onValueChange={(project) => handleFilterByProject(project)}
     >
       <Select.Trigger placeholder="Filtrer par projet" />

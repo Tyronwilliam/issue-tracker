@@ -2,6 +2,7 @@
 import { createURLParams } from "@/app/utils/service/parameterUrl";
 import { User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
+import { useSession } from "next-auth/react";
 import { useRouter, useSearchParams } from "next/navigation";
 import React from "react";
 
@@ -11,10 +12,11 @@ const IssueFilterUser = ({ users }: { users: User[] }) => {
   const orderBy = searchParams.get("orderBy");
   const status = searchParams.get("status");
   const project = searchParams.get("projectId");
+  const { data: session } = useSession();
 
   return (
     <Select.Root
-      defaultValue={"ALL" || undefined}
+      defaultValue={undefined}
       onValueChange={(user) => {
         const paramsObject = {
           status,
@@ -29,13 +31,21 @@ const IssueFilterUser = ({ users }: { users: User[] }) => {
       <Select.Trigger radius="large" placeholder="Trier par collaborateur" />
       <Select.Content>
         <Select.Item value="ALL">Tous</Select.Item>
-        {users.map((user) => {
-          return (
-            <Select.Item value={user.id} key={user.id}>
-              {user.name}
-            </Select.Item>
-          );
-        })}
+        <Select.Group>
+          <Select.Item value={session?.user?.id} key={session?.user?.id}>
+            {session?.user?.name}
+          </Select.Item>
+        </Select.Group>
+        <Select.Separator />{" "}
+        <Select.Group>
+          {users.map((user) => {
+            return session?.user?.email === user.email ? null : (
+              <Select.Item value={user.id} key={user.id}>
+                {user.name}
+              </Select.Item>
+            );
+          })}{" "}
+        </Select.Group>
       </Select.Content>
     </Select.Root>
   );
