@@ -5,7 +5,11 @@ import { Flex } from "@radix-ui/themes";
 import IssueAction from "./IssueAction";
 import IssueFilterStatut from "./IssueFilterStatut";
 import IssueFilterUser from "./IssueFilterUser";
-import IssueTable, { IssueQuery, columnName } from "./IssueTable";
+import IssueTable, {
+  IssueQuery,
+  IssueWithProject,
+  columnName,
+} from "./IssueTable";
 import ProjectFilter from "@/app/dashboard/ProjectFilter";
 import { getProjectsAssociatedWithUser } from "@/app/utils/service/userRelation";
 import { getServerSession } from "next-auth";
@@ -37,7 +41,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
     ? { [searchParams.orderBy]: "asc" }
     : undefined;
 
-  const issues = await prisma.issue.findMany({
+  const issues = (await prisma.issue.findMany({
     where: {
       status,
       userId,
@@ -46,8 +50,10 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
     orderBy,
     skip: (page - 1) * pageSize,
     take: pageSize,
-  });
-
+    include: {
+      Project: true,
+    },
+  })) as IssueWithProject[];
   const users = await prisma.user.findMany({ orderBy: { name: "asc" } });
 
   const issueCount = await prisma.issue.count({

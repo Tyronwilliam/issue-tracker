@@ -1,5 +1,5 @@
 import { IssueStatusBadge, Link } from "@/app/components";
-import { Issue, Status } from "@prisma/client";
+import { Issue, Project, Status } from "@prisma/client";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { Table } from "@radix-ui/themes";
 import NextLink from "next/link";
@@ -11,9 +11,11 @@ export interface IssueQuery {
   user: string;
   projectId: string;
 }
+export type IssueWithProject = Omit<Issue, "Project"> & { Project?: Project };
+
 interface Props {
   searchParams: IssueQuery;
-  issues?: Issue[];
+  issues?: IssueWithProject[];
 }
 
 const IssueTable = ({ searchParams, issues }: Props) => {
@@ -68,6 +70,7 @@ const IssueTable = ({ searchParams, issues }: Props) => {
                 <Table.Cell className="hidden md:table-cell">
                   {formatDate}
                 </Table.Cell>
+                <Table.Cell>{issue.Project && issue.Project.title}</Table.Cell>
               </Table.Row>
             );
           })}
@@ -83,6 +86,11 @@ const columns: { label: string; value: keyof Issue; className?: string }[] = [
     label: "Créer le",
     value: "createdAt",
     className: "hidden md:table-cell",
+  },
+  {
+    label: "Projet",
+    value: "title",
+    // className: "hidden md:table-cell",
   },
 ];
 

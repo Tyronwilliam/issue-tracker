@@ -6,7 +6,8 @@ import {
   DoubleArrowRightIcon,
 } from "@radix-ui/react-icons";
 import { Button, Flex, Text } from "@radix-ui/themes";
-import { useRouter } from "next/navigation";
+import { useRouter, useSearchParams } from "next/navigation";
+import { createURLParams } from "../utils/service/parameterUrl";
 
 interface Props {
   itemCount: number | undefined;
@@ -15,17 +16,27 @@ interface Props {
 }
 const Pagination = ({ itemCount, pageSize, currentPage }: Props) => {
   const router = useRouter();
-
+  const searchParams = useSearchParams();
+  const orderBy = searchParams.get("orderBy");
+  const status = searchParams.get("status");
+  const project = searchParams.get("projectId");
+  const user = searchParams.get("user");
   if (itemCount === undefined) return null;
 
   const pageCount = Math.ceil(itemCount / pageSize);
   if (pageCount <= 1) return null;
 
   const changePage = (page: number) => {
-    const params = new URLSearchParams();
-    params.set("page", page.toString());
-    const query = "?" + params.toString();
-    router.push("/issues/list" + query);
+    const paramsObject = {
+      status,
+      user,
+      orderBy,
+      projectId: project,
+      page: page.toString(),
+    };
+    const paramsString = createURLParams(paramsObject);
+
+    router.push("/issues/list?" + paramsString);
   };
   return (
     <Flex align={"center"} gap="2">
