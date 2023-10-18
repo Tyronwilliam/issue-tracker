@@ -43,7 +43,9 @@ export async function PATCH(
     data: {
       title,
       description,
-      userId,
+      users: userId // Use userId if it's not null, or use null to disconnect
+        ? { connect: { id: userId } }
+        : { set: [] }, // Disconnect the user
     },
   });
   return NextResponse.json(updateIssue, { status: 200 });

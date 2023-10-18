@@ -15,6 +15,7 @@ import { getProjectsAssociatedWithUser } from "@/app/utils/service/userRelation"
 import { getServerSession } from "next-auth";
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import CreateIssueUI from "@/app/components/CreateIssueUI";
+import { use } from "react";
 const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
   const session = await getServerSession(authOptions);
 
@@ -46,13 +47,19 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
       id: userId,
     },
   };
-
+  const whereCondition: any = {
+    status,
+    projectId: realId,
+  };
+  if (userId !== undefined) {
+    whereCondition.users = {
+      some: {
+        id: userId,
+      },
+    };
+  }
   const issues = (await prisma.issue.findMany({
-    where: {
-      status,
-      users,
-      projectId: realId,
-    },
+    where: whereCondition,
     orderBy,
     skip: (page - 1) * pageSize,
     take: pageSize,
@@ -60,6 +67,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
       Project: true,
     },
   })) as IssueWithProject[];
+
   const allUsers = await prisma.user.findMany({ orderBy: { name: "asc" } });
 
   const issueCount = await prisma.issue.count({
@@ -76,7 +84,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
       users,
     },
   });
-  
+
   return (
     <>
       {allIssueFromUser.length === 0 ? (

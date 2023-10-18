@@ -5,20 +5,22 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Skeleton } from "@/app/components";
 import toast, { Toaster } from "react-hot-toast";
+import { useRouter } from "next/navigation";
 
 export type IssueWithUsers = Omit<Issue, "User"> & { users?: User[] };
 const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
   const { data: users, error, isLoading } = useUser();
-
+  const router = useRouter();
   if (isLoading) return <Skeleton height="2rem" />;
   if (error) return null;
 
   const onChangeUser = async (userId: string) => {
     try {
       await axios.patch("/api/issues/" + issue.id, {
-        userId: userId == "remove" ? null : userId,
+        userId: userId === "remove" ? null : userId,
       });
       toast.success("C'est fait !");
+      router.refresh();
     } catch (error) {
       toast.error("Sauvegarde impossible");
     }
