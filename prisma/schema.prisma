@@ -23,6 +23,7 @@ model Project {
   createdAt DateTime @default(now())
   updatedAt DateTime @updatedAt
   user      User[]
+  issueId   Issue[]
 }
 
 model Issue {
@@ -34,6 +35,8 @@ model Issue {
   updatedAt   DateTime        @updatedAt
   assignees   IssueAssignee[]
   userId      String?
+  Project     Project?        @relation(fields: [projectId], references: [id])
+  projectId   Int?
 }
 
 model IssueAssignee {
