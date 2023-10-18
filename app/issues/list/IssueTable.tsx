@@ -16,6 +16,12 @@ interface Props {
 }
 
 const IssueTable = ({ searchParams, issues }: Props) => {
+  const options: Intl.DateTimeFormatOptions = {
+    year: "numeric",
+    month: "long",
+    day: "numeric",
+  };
+
   return (
     <>
       <Table.Root variant="surface">
@@ -44,22 +50,26 @@ const IssueTable = ({ searchParams, issues }: Props) => {
         </Table.Header>
 
         <Table.Body>
-          {issues?.map((issue) => (
-            <Table.Row key={issue.id}>
-              <Table.RowHeaderCell>
-                <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
-                <div className="block md:hidden">
+          {issues?.map((issue) => {
+            const date = new Date(issue.createdAt);
+            const formatDate = date.toLocaleDateString(undefined, options);
+            return (
+              <Table.Row key={issue.id}>
+                <Table.RowHeaderCell>
+                  <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
+                  <div className="block md:hidden">
+                    <IssueStatusBadge status={issue.status} />
+                  </div>
+                </Table.RowHeaderCell>
+                <Table.Cell className="hidden md:table-cell">
                   <IssueStatusBadge status={issue.status} />
-                </div>
-              </Table.RowHeaderCell>
-              <Table.Cell className="hidden md:table-cell">
-                <IssueStatusBadge status={issue.status} />
-              </Table.Cell>
-              <Table.Cell className="hidden md:table-cell">
-                {issue.createdAt.toDateString()}
-              </Table.Cell>
-            </Table.Row>
-          ))}
+                </Table.Cell>
+                <Table.Cell className="hidden md:table-cell">
+                  {formatDate}
+                </Table.Cell>
+              </Table.Row>
+            );
+          })}
         </Table.Body>
       </Table.Root>
     </>

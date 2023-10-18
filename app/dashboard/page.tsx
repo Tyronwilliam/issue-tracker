@@ -1,11 +1,12 @@
 import prisma from "@/prisma/client";
-import { Flex, Grid, Heading } from "@radix-ui/themes";
+import { Box, Flex, Grid, Heading } from "@radix-ui/themes";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import IssueChart from "./IssueChart";
 import IssueSummary from "./IssueSummary";
 import LatestIssue from "./LatestIssue";
 import ProjectFilter from "./ProjectFilter";
+import { IssueStatusBadge } from "../components";
 
 interface Props {
   searchParams: { project: string };
@@ -24,19 +25,24 @@ const Dashboard = async ({ searchParams }: Props) => {
   });
   const paramsToId = parseInt(searchParams.project);
 
-  const lastProjectId = projectsAssociatedWithUser.indexOf(
-    projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1]
-  );
+  const isIndexValid = projectsAssociatedWithUser[paramsToId] !== undefined;
+
+  const lastProjectId = isIndexValid
+    ? paramsToId
+    : projectsAssociatedWithUser.indexOf(
+        projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1]
+      );
   const projectId = searchParams.project
     ? projectsAssociatedWithUser[paramsToId].id
     : projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].id;
-
-  const isIndexValid = projectsAssociatedWithUser[paramsToId] !== undefined;
 
   const titleProject = isIndexValid
     ? projectsAssociatedWithUser[paramsToId]?.title
     : projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].title;
 
+  const status = isIndexValid
+    ? projectsAssociatedWithUser[paramsToId]?.status
+    : projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].status;
   const open = await prisma.issue.count({
     where: {
       status: "OPEN",
@@ -58,7 +64,10 @@ const Dashboard = async ({ searchParams }: Props) => {
   return (
     <>
       <Flex justify="between" align={"center"} mb={"5"}>
-        <Heading>{titleProject}</Heading>
+        <Box>
+          <Heading>{titleProject}</Heading>
+          <IssueStatusBadge status={status} />
+        </Box>
         <ProjectFilter
           projects={projectsAssociatedWithUser}
           lastProject={lastProjectId}
