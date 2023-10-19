@@ -1,9 +1,8 @@
-import { IssueStatusBadge, Link } from "@/app/components";
-import { useProjectContext } from "@/app/hooks/useProjectContext";
 import { Issue, Project, Status } from "@prisma/client";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { Table } from "@radix-ui/themes";
 import NextLink from "next/link";
+import IssueCells from "./IssueCells";
 
 export interface IssueQuery {
   status: Status;
@@ -20,66 +19,35 @@ interface Props {
 }
 
 const IssueTable = ({ searchParams, issues }: Props) => {
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
-
   return (
-    <>
-      <Table.Root variant="surface">
-        <Table.Header>
-          <Table.Row>
-            {columns?.map((column) => {
-              return (
-                <Table.ColumnHeaderCell
-                  key={column.value}
-                  className={column?.className}
-                >
-                  <NextLink
-                    href={{
-                      query: { ...searchParams, orderBy: column.value },
-                    }}
-                  >
-                    {column.label}
-                  </NextLink>
-                  {column.value === searchParams.orderBy && (
-                    <CaretSortIcon className="inline" />
-                  )}
-                </Table.ColumnHeaderCell>
-              );
-            })}
-          </Table.Row>
-        </Table.Header>
-
-        <Table.Body>
-          {issues?.map((issue) => {
-            const date = new Date(issue.createdAt);
-            const formatDate = date.toLocaleDateString(undefined, options);
+    <Table.Root variant="surface">
+      <Table.Header>
+        <Table.Row>
+          {columns?.map((column) => {
             return (
-              <Table.Row key={issue.id}>
-                <Table.RowHeaderCell>
-                  <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
-                  <div className="block md:hidden">
-                    <IssueStatusBadge status={issue.status} />
-                  </div>
-                </Table.RowHeaderCell>
-                <Table.Cell className="hidden md:table-cell">
-                  <IssueStatusBadge status={issue.status} />
-                </Table.Cell>
-                <Table.Cell className="hidden md:table-cell">
-                  {formatDate}
-                </Table.Cell>
-                <Table.Cell className="hidden md:table-cell">
-                  {issue.Project && issue.Project.title}
-                </Table.Cell>
-              </Table.Row>
+              <Table.ColumnHeaderCell
+                key={column.value}
+                className={column?.className}
+              >
+                <NextLink
+                  href={{
+                    query: { ...searchParams, orderBy: column.value },
+                  }}
+                >
+                  {column.label}
+                </NextLink>
+                {column.value === searchParams.orderBy && (
+                  <CaretSortIcon className="inline" />
+                )}
+              </Table.ColumnHeaderCell>
             );
           })}
-        </Table.Body>
-      </Table.Root>
-    </>
+        </Table.Row>
+      </Table.Header>
+      <Table.Body>
+        <IssueCells issues={issues} />
+      </Table.Body>
+    </Table.Root>
   );
 };
 const columns: { label: string; value: keyof Issue; className?: string }[] = [
@@ -92,6 +60,11 @@ const columns: { label: string; value: keyof Issue; className?: string }[] = [
   },
   {
     label: "Projet",
+    value: "title",
+    className: "hidden md:table-cell",
+  },
+  {
+    label: "Minuteur",
     value: "title",
     className: "hidden md:table-cell",
   },

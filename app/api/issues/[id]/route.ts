@@ -18,7 +18,7 @@ export async function PATCH(
       status: 400,
     });
   }
-  const { userId, description, title, isConnect } = body;
+  const { userId, description, title, isConnect, status } = body;
   if (userId) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -34,19 +34,31 @@ export async function PATCH(
   const issue = await prisma.issue.findUnique({
     where: { id: parseInt(params.id) },
   });
+
   const users = isConnect
     ? { connect: { id: userId } }
     : { disconnect: { id: userId } };
+
   if (!issue)
     return NextResponse.json({ error: "Invalid id" }, { status: 404 });
 
+  const data =
+    isConnect === undefined
+      ? {
+          title,
+          description,
+          status,
+        }
+      : {
+          title,
+          description,
+          users,
+          status,
+        };
+
   const updateIssue = await prisma.issue.update({
     where: { id: issue.id },
-    data: {
-      title,
-      description,
-      users,
-    },
+    data,
   });
   return NextResponse.json(updateIssue, { status: 200 });
 }

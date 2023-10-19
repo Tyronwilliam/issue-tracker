@@ -1,26 +1,26 @@
 "use client";
+import { zodResolver } from "@hookform/resolvers/zod";
 import {
+  AlertDialog,
   Button,
+  Callout,
   Card,
+  Dialog,
   Flex,
   Text,
-  Dialog,
   TextField,
-  TextFieldInput,
-  AlertDialog,
-  Callout,
 } from "@radix-ui/themes";
-import React, { useState } from "react";
-import { useForm } from "react-hook-form";
-import { z } from "zod";
-import { projectSchema } from "../validationSchema";
-import { zodResolver } from "@hookform/resolvers/zod";
-import { ErrorMessage, Spinner } from "../components";
 import axios from "axios";
-import { useRouter } from "next/navigation";
-import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { Session } from "next-auth";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { useForm } from "react-hook-form";
+import { AiOutlineExclamationCircle } from "react-icons/ai";
+import { z } from "zod";
+import { ErrorMessage, Spinner } from "../components";
 import { useProjectContext } from "../hooks/useProjectContext";
+import { projectSchema } from "../validationSchema";
+import { useTimerContext } from "../hooks/useTimerContext";
 
 export const CreateProject = ({ session }: { session: Session | null }) => {
   return (
@@ -40,6 +40,7 @@ type ProjectFormData = z.infer<typeof projectSchema>;
 
 export const DialogProject = ({ session }: { session: Session | null }) => {
   const router = useRouter();
+
   const { setProjectId, projectId } = useProjectContext();
 
   const [open, setOpen] = useState(false);
@@ -70,7 +71,7 @@ export const DialogProject = ({ session }: { session: Session | null }) => {
   });
   return (
     <>
-      {" "}
+      {/* <Button onClick={() => toast.add("HELLO WORD")}>Test Toast</Button>{" "} */}
       {error && (
         <Callout.Root color="red" className="mb-5">
           <Callout.Icon>

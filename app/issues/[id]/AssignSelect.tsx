@@ -36,10 +36,7 @@ const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
   return (
     <>
       <Toaster />
-      <Select.Root
-        // defaultValue={ || undefined}
-        onValueChange={(userId) => onChangeUser(userId)}
-      >
+      <Select.Root onValueChange={(userId) => onChangeUser(userId)}>
         <Select.Trigger placeholder={"Attribuer tâche"} />
         <Select.Content>
           <Select.Group>
@@ -66,7 +63,11 @@ const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
                     )
                 )
                 .map((user: any) => (
-                  <Select.Item value={user.id} key={user.id}>
+                  <Select.Item
+                    value={user.id}
+                    key={user.id}
+                    disabled={user.id !== session?.user?.id }
+                  >
                     {user.name}
                   </Select.Item>
                 ))}

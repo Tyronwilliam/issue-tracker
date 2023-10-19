@@ -8,6 +8,8 @@ import NavBar from "./NavBar";
 import AuthProvider from "./auth/Provider";
 import QueryClientProvider from "./QueryClientProvider";
 import { ProjectContextProvider } from "./hooks/useProjectContext";
+import { TimerContextProvider } from "./hooks/useTimerContext";
+import TimerToast from "./components/TimerToast";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -31,12 +33,14 @@ export default function RootLayout({
         <AuthProvider>
           <QueryClientProvider>
             <ProjectContextProvider>
-              <Theme accentColor="purple">
-                <NavBar />
-                <main className="p-5">
-                  <Container>{children}</Container>
-                </main>
-              </Theme>
+              <TimerContextProvider>
+                <Theme accentColor="purple">
+                  <NavBar />
+                  <main className="p-5">
+                    <Container>{children}</Container>
+                  </main>
+                </Theme>
+              </TimerContextProvider>
             </ProjectContextProvider>
           </QueryClientProvider>
         </AuthProvider>
