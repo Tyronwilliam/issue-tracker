@@ -1,7 +1,12 @@
+import { authOptions } from "@/app/api/auth/[...nextauth]/route";
+import CreateIssueUI from "@/app/components/CreateIssueUI";
 import Pagination from "@/app/components/Pagination";
+import ProjectFilter from "@/app/dashboard/ProjectFilter";
+import { getProjectsAssociatedWithUser } from "@/app/utils/service/userRelation";
 import prisma from "@/prisma/client";
 import { Status } from "@prisma/client";
 import { Flex } from "@radix-ui/themes";
+import { getServerSession } from "next-auth";
 import IssueAction from "./IssueAction";
 import IssueFilterStatut from "./IssueFilterStatut";
 import IssueFilterUser from "./IssueFilterUser";
@@ -10,12 +15,6 @@ import IssueTable, {
   IssueWithProject,
   columnName,
 } from "./IssueTable";
-import ProjectFilter from "@/app/dashboard/ProjectFilter";
-import { getProjectsAssociatedWithUser } from "@/app/utils/service/userRelation";
-import { getServerSession } from "next-auth";
-import { authOptions } from "@/app/api/auth/[...nextauth]/route";
-import CreateIssueUI from "@/app/components/CreateIssueUI";
-import { use } from "react";
 const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
   const session = await getServerSession(authOptions);
 

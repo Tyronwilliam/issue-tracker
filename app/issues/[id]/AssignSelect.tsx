@@ -1,17 +1,22 @@
 "use client";
-import { Issue, User } from "@prisma/client";
+import { Skeleton } from "@/app/components";
+import { Issue, Project, User } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
-import { Skeleton } from "@/app/components";
-import toast, { Toaster } from "react-hot-toast";
 import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
+import toast, { Toaster } from "react-hot-toast";
 
-export type IssueWithUsers = Omit<Issue, "User"> & { users?: User[] };
+export type IssueWithUsers = Omit<Issue, "User" | "Project"> & {
+  users?: User[];
+  Project?: Project;
+};
+
 const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
-  const { data: users, error, isLoading } = useUser();
+  const { data: users, error, isLoading } = useUser(issue?.Project?.id);
   const { data: session } = useSession();
+
   const router = useRouter();
   if (isLoading) return <Skeleton height="2rem" />;
   if (error) return null;
@@ -51,18 +56,20 @@ const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
             {issue?.users?.some((user) => user.id === session?.user?.id) && (
               <Select.Item value="remove">Retirer</Select.Item>
             )}
-            {users
-              ?.filter(
-                (user: any) =>
-                  !issue?.users?.some(
-                    (second_user) => user.id === second_user.id
-                  )
-              )
-              .map((user: any) => (
-                <Select.Item value={user.id} key={user.id}>
-                  {user.name}
-                </Select.Item>
-              ))}
+            {users?.length !== undefined &&
+              users?.length > 0 &&
+              users
+                ?.filter(
+                  (user: any) =>
+                    !issue?.users?.some(
+                      (second_user) => user.id === second_user.id
+                    )
+                )
+                .map((user: any) => (
+                  <Select.Item value={user.id} key={user.id}>
+                    {user.name}
+                  </Select.Item>
+                ))}
           </Select.Group>
         </Select.Content>
       </Select.Root>
@@ -70,11 +77,13 @@ const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
   );
 };
 
-const useUser = () =>
+const useUser = (projectId: any) =>
   useQuery({
-    queryKey: ["users"],
-    queryFn: () => axios.get<User[]>("/api/users").then((res) => res.data),
+    queryKey: ["users", projectId],
+    queryFn: () =>
+      axios.get<User[]>("/api/users/" + projectId).then((res) => res.data),
     staleTime: 60 * 1000,
     retry: 3,
   });
+
 export default AssignSelect;

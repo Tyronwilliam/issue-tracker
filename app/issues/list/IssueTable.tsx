@@ -1,4 +1,5 @@
 import { IssueStatusBadge, Link } from "@/app/components";
+import { useProjectContext } from "@/app/hooks/useProjectContext";
 import { Issue, Project, Status } from "@prisma/client";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { Table } from "@radix-ui/themes";

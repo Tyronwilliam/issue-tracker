@@ -13,17 +13,14 @@ interface Props {
 }
 const IssueDetailPage = async ({ params }: Props) => {
   const session = await getServerSession(authOptions);
-  const users = {
-    some: {
-      id: session?.user?.id,
-    },
-  };
-  const issue = await prisma.issue.findUnique({
+
+  const issue = (await prisma.issue.findUnique({
     where: { id: parseInt(params.id) },
     include: {
       users: true,
+      Project: true,
     },
-  });
+  })) as IssueWithUsers;
 
   if (!issue) {
     notFound();
