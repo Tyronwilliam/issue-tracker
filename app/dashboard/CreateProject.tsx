@@ -20,6 +20,7 @@ import axios from "axios";
 import { useRouter } from "next/navigation";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { Session } from "next-auth";
+import { useProjectContext } from "../hooks/useProjectContext";
 
 export const CreateProject = ({ session }: { session: Session | null }) => {
   return (
@@ -39,7 +40,9 @@ type ProjectFormData = z.infer<typeof projectSchema>;
 
 export const DialogProject = ({ session }: { session: Session | null }) => {
   const router = useRouter();
+  const { setProjectId, projectId } = useProjectContext();
 
+  const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
@@ -52,10 +55,14 @@ export const DialogProject = ({ session }: { session: Session | null }) => {
 
   const onSubmit = handleSubmit(async (data) => {
     try {
-      data.userId = session?.user?.id;
       setIsSubmitting(true);
-      await axios.post("/api/project", data);
+      data.userId = session?.user?.id;
+      const res = await axios.post("/api/project", data);
+      setOpen(false);
+      setProjectId(res.data.id);
       router.refresh();
+      // router.push("/dashboard" + "?project=" + res.data.id);
+      setIsSubmitting(false);
     } catch (error) {
       setIsSubmitting(false);
       setError("An unexpected error occurred");
@@ -72,7 +79,7 @@ export const DialogProject = ({ session }: { session: Session | null }) => {
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
-      <Dialog.Root>
+      <Dialog.Root open={open} onOpenChange={setOpen}>
         <Dialog.Trigger>
           <Button>Créer un projet</Button>
         </Dialog.Trigger>

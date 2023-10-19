@@ -24,12 +24,12 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
   );
   const projectId = parseInt(searchParams.projectId);
 
-  const isIndexValid = projectsAssociatedWithUser[projectId] !== undefined;
+  const projectIndex = projectsAssociatedWithUser.findIndex(
+    (project) => project.id === projectId
+  );
+  const isIndexValid = projectIndex !== -1;
 
-  const realId = isIndexValid
-    ? projectsAssociatedWithUser[projectId].id
-    : undefined;
-
+  const realId = isIndexValid ? projectId : undefined;
   const page = parseInt(searchParams.page) || 1;
   const pageSize = 10;
 
@@ -42,6 +42,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
   const orderBy = columnName.includes(searchParams.orderBy)
     ? { [searchParams.orderBy]: "asc" }
     : undefined;
+
   const users = {
     some: {
       id: userId,
