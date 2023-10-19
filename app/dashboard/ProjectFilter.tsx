@@ -18,6 +18,7 @@ const ProjectFilter = ({ projects, lastProject, selectAll }: Props) => {
   const orderBy = searchParams.get("orderBy");
   const user = searchParams.get("user");
   const status = searchParams.get("status");
+  
   const handleFilterByProject = (project: string) => {
     setProjectId(parseInt(project));
     if (selectAll) {

@@ -5,11 +5,13 @@ import { useQuery } from "@tanstack/react-query";
 import axios from "axios";
 import { Skeleton } from "@/app/components";
 import toast, { Toaster } from "react-hot-toast";
+import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
 
 export type IssueWithUsers = Omit<Issue, "User"> & { users?: User[] };
 const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
   const { data: users, error, isLoading } = useUser();
+  const { data: session } = useSession();
   const router = useRouter();
   if (isLoading) return <Skeleton height="2rem" />;
   if (error) return null;
@@ -17,7 +19,8 @@ const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
   const onChangeUser = async (userId: string) => {
     try {
       await axios.patch("/api/issues/" + issue.id, {
-        userId: userId === "remove" ? null : userId,
+        userId: userId === "remove" ? session?.user?.id : userId,
+        isConnect: userId === "remove" ? false : true,
       });
       toast.success("C'est fait !");
       router.refresh();
@@ -45,16 +48,21 @@ const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
           <Select.Separator />
           <Select.Group>
             <Select.Label>Suggestions</Select.Label>
-            <Select.Item value="remove">Retirer</Select.Item>
-            {users?.map((user) =>
-              issue?.users?.map((second_user) =>
-                user?.id === second_user?.id ? null : (
-                  <Select.Item value={user.id} key={user.id} disabled>
-                    {user.name}
-                  </Select.Item>
-                )
-              )
+            {issue?.users?.some((user) => user.id === session?.user?.id) && (
+              <Select.Item value="remove">Retirer</Select.Item>
             )}
+            {users
+              ?.filter(
+                (user: any) =>
+                  !issue?.users?.some(
+                    (second_user) => user.id === second_user.id
+                  )
+              )
+              .map((user: any) => (
+                <Select.Item value={user.id} key={user.id}>
+                  {user.name}
+                </Select.Item>
+              ))}
           </Select.Group>
         </Select.Content>
       </Select.Root>

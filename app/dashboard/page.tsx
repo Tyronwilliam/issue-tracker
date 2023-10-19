@@ -24,7 +24,6 @@ const Dashboard = async ({ searchParams }: Props) => {
 
   const realProjectId = parseInt(searchParams.project);
 
-  // Check if the realProjectId exists in the projectsAssociatedWithUser array
   const projectIndex = projectsAssociatedWithUser.findIndex(
     (project) => project.id === realProjectId
   );
@@ -34,7 +33,6 @@ const Dashboard = async ({ searchParams }: Props) => {
     ? realProjectId
     : projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].id;
 
-  // If you need to access the entire project object:
   const lastProjectId =
     projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].id;
 
