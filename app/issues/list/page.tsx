@@ -1,7 +1,7 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import CreateIssueUI from "@/app/components/CreateIssueUI";
 import Pagination from "@/app/components/Pagination";
-import ProjectFilter from "@/app/dashboard/ProjectFilter";
+import ProjectFilter from "@/app/dashboard/projects/[id]/ProjectFilter";
 import { getProjectsAssociatedWithUser } from "@/app/utils/service/userRelation";
 import prisma from "@/prisma/client";
 import { Status } from "@prisma/client";

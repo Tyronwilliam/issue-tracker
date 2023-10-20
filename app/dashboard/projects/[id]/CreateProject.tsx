@@ -17,10 +17,9 @@ import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { z } from "zod";
-import { ErrorMessage, Spinner } from "../components";
-import { useProjectContext } from "../hooks/useProjectContext";
-import { projectSchema } from "../validationSchema";
-import { useTimerContext } from "../hooks/useTimerContext";
+import { ErrorMessage, Spinner } from "../../../components";
+import { useProjectContext } from "../../../hooks/useProjectContext";
+import { projectSchema } from "../../../validationSchema";
 
 export const CreateProject = ({ session }: { session: Session | null }) => {
   return (

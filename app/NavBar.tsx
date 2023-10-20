@@ -20,7 +20,7 @@ const links = [
     href: "/dashboard",
   },
   {
-    label: "Issues",
+    label: "Tâches",
     href: "/issues/list",
   },
 ];

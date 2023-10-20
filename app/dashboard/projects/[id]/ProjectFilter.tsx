@@ -3,8 +3,8 @@ import { Project } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
 import React, { useEffect, useState } from "react";
-import { createURLParams } from "../utils/service/parameterUrl";
-import { useProjectContext } from "../hooks/useProjectContext";
+import { createURLParams } from "../../../utils/service/parameterUrl";
+import { useProjectContext } from "../../../hooks/useProjectContext";
 
 interface Props {
   projects: Project[];
@@ -18,7 +18,7 @@ const ProjectFilter = ({ projects, lastProject, selectAll }: Props) => {
   const orderBy = searchParams.get("orderBy");
   const user = searchParams.get("user");
   const status = searchParams.get("status");
-  
+
   const handleFilterByProject = (project: string) => {
     setProjectId(parseInt(project));
     if (selectAll) {
