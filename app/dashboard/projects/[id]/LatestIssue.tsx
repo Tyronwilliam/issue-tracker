@@ -5,7 +5,11 @@ import NextLink from "next/link";
 import CreateIssueUI from "../../../components/CreateIssueUI";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../api/auth/[...nextauth]/route";
-const LatestIssue = async ({ projectId }: { projectId: number }) => {
+const LatestIssue = async ({
+  projectId,
+}: {
+  projectId: number | undefined;
+}) => {
   const session = await getServerSession(authOptions);
   const latestIssues = await prisma.issue.findMany({
     where: { projectId: projectId },

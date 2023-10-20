@@ -26,7 +26,7 @@ const ProjectsRecapPage = async () => {
         <Heading>Projets</Heading>
         <DialogProject session={session} />
       </Flex>
-      <ProjectsTable projects={projectsAssociatedWithUser} />;
+      <ProjectsTable projects={projectsAssociatedWithUser} />
     </>
   );
 };

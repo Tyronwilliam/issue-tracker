@@ -22,13 +22,13 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
     session
   );
   const projectId = parseInt(searchParams.projectId);
-
   const projectIndex = projectsAssociatedWithUser.findIndex(
     (project) => project.id === projectId
   );
   const isIndexValid = projectIndex !== -1;
 
   const realId = isIndexValid ? projectId : undefined;
+
   const page = parseInt(searchParams.page) || 1;
   const pageSize = 10;
 
@@ -103,10 +103,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
             >
               <IssueFilterStatut />
               <IssueFilterUser users={allUsers} />
-              <ProjectFilter
-                projects={projectsAssociatedWithUser}
-                selectAll={true}
-              />
+              <ProjectFilter projects={projectsAssociatedWithUser} />
             </Flex>
             <IssueAction />
           </Flex>

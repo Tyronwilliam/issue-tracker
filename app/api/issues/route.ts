@@ -15,7 +15,26 @@ export async function POST(request: NextRequest) {
     });
   }
   const { userId, projectId } = body; // Replace with how you retrieve the user's ID
+  const projects = await prisma.project.findMany({
+    where: {
+      user: {
+        some: {
+          id: userId,
+        },
+      },
+    },
+  });
 
+  const isProjectAssignToUser = projects.some((el) => el.id === projectId);
+
+  if (!isProjectAssignToUser) {
+    return NextResponse.json(
+      { error: "Invalid project id" },
+      {
+        status: 400,
+      }
+    );
+  }
   const newIssue = await prisma.issue.create({
     data: {
       title: body.title,

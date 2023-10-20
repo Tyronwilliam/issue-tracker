@@ -1,11 +1,14 @@
+"use client";
 import { Project } from "@prisma/client";
 import { Table } from "@radix-ui/themes";
 import React from "react";
 import { IssueStatusBadge, Link } from "../components";
+import { useProjectContext } from "../hooks/useProjectContext";
 interface Props {
   projects: Project[];
 }
 const ProjectsTable = ({ projects }: Props) => {
+  const { setProjectId } = useProjectContext();
   return (
     <Table.Root variant="surface">
       <Table.Header>
@@ -28,7 +31,7 @@ const ProjectsTable = ({ projects }: Props) => {
         {projects?.map((project) => {
           return (
             <Table.Row key={project.id}>
-              <Table.RowHeaderCell>
+              <Table.RowHeaderCell onClick={() => setProjectId(project.id)}>
                 <Link href={`/dashboard/projects/${project.id}`}>
                   {project.title}
                 </Link>

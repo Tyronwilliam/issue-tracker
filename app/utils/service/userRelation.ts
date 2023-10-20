@@ -16,3 +16,13 @@ export const getProjectsAssociatedWithUser = async (
 
   return project;
 };
+export const getProjectById = async (projectId: number) => {
+  const id = await projectId;
+  const project = await prisma.project.findUnique({
+    where: {
+      id: projectId,
+    },
+  });
+
+  return project;
+};

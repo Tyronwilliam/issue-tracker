@@ -42,11 +42,13 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
         data.userId = session?.user?.id;
         await axios.post("/api/issues", data);
       }
-      router.push("/issues/list");
+      router.push("/issues/list?projectId=" + projectId);
       router.refresh();
-    } catch (error) {
+    } catch (error: any) {
       setIsSubmitting(false);
-      setError("An unexpected error occurred");
+      console.log(error);
+      // setError("An unexpected error occurred");
+      setError(error.response.data.error);
     }
   });
 
