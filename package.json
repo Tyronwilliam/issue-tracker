@@ -28,6 +28,7 @@
     "next-auth": "^4.23.2",
     "postcss": "8.4.31",
     "react": "18.2.0",
+    "react-awesome-reveal": "^4.2.5",
     "react-dom": "18.2.0",
     "react-hook-form": "^7.46.1",
     "react-hot-toast": "^2.4.1",

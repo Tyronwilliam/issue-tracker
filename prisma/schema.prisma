@@ -36,6 +36,7 @@ model Issue {
   Project     Project? @relation(fields: [projectId], references: [id])
   projectId   Int?
   users       User[]
+  timer       Int      @default(0)
 }
 
 model User {

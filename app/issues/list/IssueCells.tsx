@@ -3,28 +3,32 @@ import { IssueStatusBadge, Link } from "@/app/components";
 import { useTimerContext } from "@/app/hooks/useTimerContext";
 import { PlayIcon, StopIcon } from "@radix-ui/react-icons";
 import { Flex, Table, Tooltip } from "@radix-ui/themes";
-import React from "react";
 import { IssueWithProject } from "./IssueTable";
+import { TimerContent } from "@/app/components/Timer/TimerToast";
 interface Props {
   issues?: IssueWithProject[];
 }
 const IssueCells = ({ issues }: Props) => {
+  const { timers, setTimers, setShowToast, setCurrentTimer } =
+    useTimerContext();
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
     day: "numeric",
   };
-  const { timers, setTimers } = useTimerContext();
 
   const createTimer = (issue: any) => {
-    const exist = timers.includes(issue);
+    const exist = timers.some((el) => el.id === issue.id);
     if (exist) return;
+    setCurrentTimer(issue?.id);
     setTimers((prevTimers) => [...prevTimers, issue]);
+    setShowToast(true);
   };
-  
   return issues?.map((issue) => {
     const date = new Date(issue.createdAt);
     const formatDate = date.toLocaleDateString(undefined, options);
+    const timerExists = timers.some((timer) => timer.id === issue.id);
+
     return (
       <Table.Row key={issue.id}>
         <Table.RowHeaderCell>
@@ -42,22 +46,12 @@ const IssueCells = ({ issues }: Props) => {
         </Table.Cell>
         <Table.Cell className="hidden md:table-cell mx-auto">
           <Flex gap={"2"} align={"center"}>
-            TEMPS
-            <Tooltip
-              content="Start"
-              style={{ backgroundColor: "var(--accent-9)" }}
-            >
-              <PlayIcon
-                style={{ color: "var(--accent-11)" }}
-                onClick={() => createTimer(issue)}
-              />
-            </Tooltip>
-            <Tooltip
-              content="Stop"
-              style={{ backgroundColor: "var(--accent-9)" }}
-            >
-              <StopIcon style={{ color: "var(--accent-11)" }} />
-            </Tooltip>
+            <IconeTimer
+              timerExists={timerExists}
+              createTimer={createTimer}
+              issue={issue}
+              timers={timers}
+            />
           </Flex>
         </Table.Cell>
       </Table.Row>
@@ -66,3 +60,44 @@ const IssueCells = ({ issues }: Props) => {
 };
 
 export default IssueCells;
+
+type IconeTimerProps = {
+  timerExists: boolean;
+  createTimer: (issue: any) => void;
+  issue: IssueWithProject;
+  timers: any[];
+};
+
+const IconeTimer = ({
+  timerExists,
+  createTimer,
+  issue,
+  timers,
+}: IconeTimerProps) => {
+  return timerExists ? (
+    <>
+      {timers.map((timer) => {
+        return timer?.id === issue?.id ? (
+          <TimerContent
+            key={timer?.id}
+            timer={timer}
+            hours={timer.hours}
+            minutes={timer.minutes}
+            seconds={timer.seconds}
+            isToast={false}
+          />
+        ) : null;
+      })}
+      {/* <Tooltip content="Stop" style={{ backgroundColor: "var(--accent-9)" }}>
+        <StopIcon style={{ color: "var(--accent-11)" }} />
+      </Tooltip> */}
+    </>
+  ) : (
+    <Tooltip content="Start" style={{ backgroundColor: "var(--accent-9)" }}>
+      <PlayIcon
+        style={{ color: "var(--accent-11)" }}
+        onClick={() => createTimer(issue)}
+      />
+    </Tooltip>
+  );
+};

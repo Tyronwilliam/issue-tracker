@@ -2,21 +2,20 @@
 import { Project } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import { useRouter, useSearchParams } from "next/navigation";
-import { useProjectContext } from "../../../hooks/useProjectContext";
-import { createURLParams } from "../../../utils/service/parameterUrl";
+import { useProjectContext } from "../../hooks/useProjectContext";
+import { createURLParams } from "../../utils/service/parameterUrl";
 
 interface Props {
   projects: Project[];
- 
 }
 const ProjectFilter = ({ projects }: Props) => {
   const router = useRouter();
-  const { setProjectId, projectId } = useProjectContext();
+  const { setProjectId } = useProjectContext();
   const searchParams = useSearchParams();
   const orderBy = searchParams.get("orderBy");
   const user = searchParams.get("user");
   const status = searchParams.get("status");
-
+  const paramsProjectId = searchParams.get("projectId");
   const handleFilterByProject = (project: string) => {
     setProjectId(parseInt(project));
     const paramsObject = {
@@ -28,9 +27,10 @@ const ProjectFilter = ({ projects }: Props) => {
     const paramsString = createURLParams(paramsObject);
     return router.push("/issues/list" + "?" + paramsString);
   };
+
   return (
     <Select.Root
-      defaultValue={projectId?.toString() || undefined}
+      defaultValue={paramsProjectId || undefined}
       onValueChange={(project) => handleFilterByProject(project)}
     >
       <Select.Trigger placeholder="Filtrer par projet" />

@@ -1,0 +1,2 @@
+-- AlterTable
+ALTER TABLE `issue` ADD COLUMN `timer` INTEGER NOT NULL DEFAULT 0;

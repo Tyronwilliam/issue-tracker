@@ -3,15 +3,10 @@ import { Box, Flex, Grid, Heading } from "@radix-ui/themes";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../../../api/auth/[...nextauth]/route";
 import { IssueStatusBadge } from "../../../components";
-import {
-  getProjectById,
-  getProjectsAssociatedWithUser,
-} from "../../../utils/service/userRelation";
-import { CreateProject, DialogProject } from "./CreateProject";
+import { CreateProject } from "./CreateProject";
 import IssueChart from "./IssueChart";
 import IssueSummary from "./IssueSummary";
 import LatestIssue from "./LatestIssue";
-import ProjectFilter from "./ProjectFilter";
 
 interface Props {
   params: { id: string };
@@ -73,11 +68,11 @@ const DashboardSingleProject = async ({ params }: Props) => {
         </Flex> */}
       </Flex>
       <Grid columns={{ initial: "1", md: "2" }} gap={"5"}>
+        <IssueChart closed={closed} open={open} inProgress={inProgress} />{" "}
         <Flex direction="column" gap={"5"}>
           <IssueSummary closed={closed} open={open} inProgress={inProgress} />
-          <IssueChart closed={closed} open={open} inProgress={inProgress} />
+          <LatestIssue projectId={projectId} />
         </Flex>
-        <LatestIssue projectId={projectId} />
       </Grid>
     </>
   );

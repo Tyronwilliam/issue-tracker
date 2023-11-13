@@ -42,7 +42,9 @@ const NavBar = () => {
                 <li key={link.href}>
                   <Link
                     href={`${
-                      link.href === "/issues/list"
+                      link.href === "/issues/list" &&
+                      projectId !== null &&
+                      !Number.isNaN(projectId)
                         ? `${link.href}?projectId=${projectId}`
                         : link.href
                     }`}
