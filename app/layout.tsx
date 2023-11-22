@@ -37,8 +37,10 @@ export default function RootLayout({
                 <TimerContextProvider>
                   <NavBar />
                   <main className="p-5">
-                    <TaskList />
-                    <Container>{children}</Container>
+                    <Container>
+                      <TaskList />
+                      {children}
+                    </Container>
                   </main>
                 </TimerContextProvider>
               </Theme>

@@ -7,13 +7,14 @@ import { useEffect } from "react";
 import { useStopwatch } from "react-timer-hook";
 
 // Pouvoir cliquer sur l'icone pou r creer un timer OK
+// Si il y a une valeur differente de 0 alors on initialise le timer a la aleur de la bdd
 // Lorsque le timer est lancé je ne peux pas lancer le meme  OK
-// Le timer se declenche automatiquement
+// Le timer se declenche automatiquement OK
 // Si on declenche un timer alors qu'il y en as un qui tourne / Modal avertissement etes vous sur de vouloir arreter le timer actuelle = Current
 //
-// On ne peux pas lancer deux timer a la fois OU
-// Si deja un timer alors on stop le timer actuel
-// On sauvegarde la valeur du timer
+// On ne peux pas lancer deux timer a la fois OK
+// Si deja un timer alors on stop le timer actuel OK
+// On sauvegarde la valeur du timer OK
 // Back to step 1
 export const CustomTimerToast = ({
   timer,
@@ -30,27 +31,22 @@ export const CustomTimerToast = ({
 }) => {
   const stopwatchOffset = new Date();
   stopwatchOffset.setSeconds(stopwatchOffset.getSeconds() + timer.timer);
-  const {
-    seconds,
-    minutes,
-    hours,
-    pause,
-    start,
-    isRunning,
-    totalSeconds,
-    reset,
-  } = useStopwatch({ offsetTimestamp: stopwatchOffset, autoStart: true });
+
+  const { seconds, minutes, hours, pause, start, isRunning, totalSeconds } =
+    useStopwatch({ offsetTimestamp: stopwatchOffset, autoStart: true });
   const { currentTimer, setCurrentTimer } = useTimerContext();
 
   const handleStart = async () => {
     setCurrentTimer(timer?.id);
     start();
   };
+
   const handlePause = async () => {
     pause();
     const updateTimer = await axios.patch("/api/issues/" + timer.id, {
       timer: totalSeconds,
     });
+    setShowToast(false);
     console.log(updateTimer, "wesh");
   };
   useEffect(() => {
@@ -74,11 +70,27 @@ export const CustomTimerToast = ({
         return t;
       }
     });
-
+    console.log(updatedTimers);
     // Mettez à jour le tableau des timers avec les timers mis à jour
     setTimers(updatedTimers);
-  }, [totalSeconds, seconds, minutes, hours, timer, timers]);
+  }, [totalSeconds, seconds, minutes, hours]);
+  // useEffect(() => {
+  //   const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+  //     if (isRunning) {
+  //       // If the timer is running, show a confirmation message
+  //       const message =
+  //         "Un timer est en cours, êtes-vous sûr de vouloir quitter la page ?";
+  //       event.returnValue = message; // Standard for most browsers
+  //       return message; // For some older browsers
+  //     }
+  //   };
 
+  //   window.addEventListener("beforeunload", handleBeforeUnload);
+
+  //   return () => {
+  //     window.removeEventListener("beforeunload", handleBeforeUnload);
+  //   };
+  // }, [isRunning]);
   return (
     <Card
       className={`z-50 slide-top max-w-xs bg-white ${

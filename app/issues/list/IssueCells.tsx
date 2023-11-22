@@ -12,6 +12,7 @@ interface Props {
 const IssueCells = ({ issues }: Props) => {
   const { timers, setTimers, setShowToast, setCurrentTimer } =
     useTimerContext();
+
   const options: Intl.DateTimeFormatOptions = {
     year: "numeric",
     month: "long",
@@ -22,7 +23,6 @@ const IssueCells = ({ issues }: Props) => {
     const res = await axios.get("/api/issues/" + issue.id);
     const id = res.data.id;
     const freshIssue = res.data;
-    console.log(freshIssue, "yep");
     const exist = timers.some((el) => el.id === id);
     if (exist) return;
     setCurrentTimer(id);
@@ -98,6 +98,7 @@ const IconeTimer = ({
     <Tooltip content="Start" style={{ backgroundColor: "var(--accent-9)" }}>
       <PlayIcon
         style={{ color: "var(--accent-11)" }}
+        className="cursor-pointer"
         onClick={() => createTimer(issue)}
       />
     </Tooltip>

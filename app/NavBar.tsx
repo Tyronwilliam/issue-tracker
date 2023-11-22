@@ -39,7 +39,7 @@ const NavBar = () => {
             </Link>
             <ul className="flex space-x-6">
               {links?.map((link) => (
-                <li key={link.href}>
+                <li key={link.href} onClick={() => console.log("click")}>
                   <Link
                     href={`${
                       link.href === "/issues/list" &&
