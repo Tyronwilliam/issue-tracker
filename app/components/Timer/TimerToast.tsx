@@ -39,7 +39,7 @@ export const CustomTimerToast = ({
   const handlePause = async () => {
     pause();
     const updateTimer = await axios.patch("/api/issues/" + timer.id, {
-      totalSeconds: totalSeconds,
+      timer: totalSeconds,
     });
     console.log(updateTimer, "wesh");
   };

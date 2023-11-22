@@ -1,7 +1,7 @@
 "use client";
 import { IssueStatusBadge, Link } from "@/app/components";
 import { useTimerContext } from "@/app/hooks/useTimerContext";
-import { PlayIcon, StopIcon } from "@radix-ui/react-icons";
+import { PlayIcon } from "@radix-ui/react-icons";
 import { Flex, Table, Tooltip } from "@radix-ui/themes";
 import { IssueWithProject } from "./IssueTable";
 import { TimerContent } from "@/app/components/Timer/TimerToast";
@@ -88,9 +88,6 @@ const IconeTimer = ({
           />
         ) : null;
       })}
-      {/* <Tooltip content="Stop" style={{ backgroundColor: "var(--accent-9)" }}>
-        <StopIcon style={{ color: "var(--accent-11)" }} />
-      </Tooltip> */}
     </>
   ) : (
     <Tooltip content="Start" style={{ backgroundColor: "var(--accent-9)" }}>
