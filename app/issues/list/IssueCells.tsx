@@ -5,6 +5,7 @@ import { PlayIcon } from "@radix-ui/react-icons";
 import { Flex, Table, Tooltip } from "@radix-ui/themes";
 import { IssueWithProject } from "./IssueTable";
 import { TimerContent } from "@/app/components/Timer/TimerToast";
+import axios from "axios";
 interface Props {
   issues?: IssueWithProject[];
 }
@@ -17,11 +18,15 @@ const IssueCells = ({ issues }: Props) => {
     day: "numeric",
   };
 
-  const createTimer = (issue: any) => {
-    const exist = timers.some((el) => el.id === issue.id);
+  const createTimer = async (issue: any) => {
+    const res = await axios.get("/api/issues/" + issue.id);
+    const id = res.data.id;
+    const freshIssue = res.data;
+    console.log(freshIssue, "yep");
+    const exist = timers.some((el) => el.id === id);
     if (exist) return;
-    setCurrentTimer(issue?.id);
-    setTimers((prevTimers) => [...prevTimers, issue]);
+    setCurrentTimer(id);
+    setTimers((prevTimers) => [...prevTimers, freshIssue]);
     setShowToast(true);
   };
   return issues?.map((issue) => {

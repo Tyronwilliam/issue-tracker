@@ -28,11 +28,21 @@ export const CustomTimerToast = ({
   setTimers: (arg: any) => void;
   setShowToast: (showToast: boolean) => void;
 }) => {
-  const { seconds, minutes, hours, pause, start, isRunning, totalSeconds } =
-    useStopwatch({ autoStart: true });
+  const stopwatchOffset = new Date();
+  stopwatchOffset.setSeconds(stopwatchOffset.getSeconds() + timer.timer);
+  const {
+    seconds,
+    minutes,
+    hours,
+    pause,
+    start,
+    isRunning,
+    totalSeconds,
+    reset,
+  } = useStopwatch({ offsetTimestamp: stopwatchOffset, autoStart: true });
   const { currentTimer, setCurrentTimer } = useTimerContext();
 
-  const handleStart = () => {
+  const handleStart = async () => {
     setCurrentTimer(timer?.id);
     start();
   };
@@ -48,6 +58,7 @@ export const CustomTimerToast = ({
       pause();
     }
   }, [timer, currentTimer]);
+
   useEffect(() => {
     // Recherchez le bon timer dans le tableau en fonction de son ID
     const updatedTimers = timers.map((t) => {
@@ -67,43 +78,6 @@ export const CustomTimerToast = ({
     // Mettez à jour le tableau des timers avec les timers mis à jour
     setTimers(updatedTimers);
   }, [totalSeconds, seconds, minutes, hours, timer, timers]);
-  useEffect(() => {
-    // Récupérez la valeur du timer depuis le stockage local lors de l'initialisation
-    const savedData = localStorage.getItem("timerValue");
-    let data: { id: number; time: number }[] = [];
-
-    if (savedData) {
-      data = JSON.parse(savedData);
-
-      // Vérifiez si un élément avec le même ID existe dans le tableau
-      const existingIndex = data.findIndex((el: any) => el.id === timer.id);
-
-      if (existingIndex !== -1) {
-        // Mettez à jour la valeur du timer pour l'élément existant
-        data[existingIndex].time = totalSeconds;
-      } else {
-        // Ajoutez un nouvel élément si l'ID n'existe pas
-        data.push({
-          id: timer.id,
-          time: totalSeconds,
-        });
-      }
-    } else {
-      // Créez un nouvel tableau avec l'élément initial
-      data.push({
-        id: timer.id,
-        time: totalSeconds,
-      });
-    }
-
-    // const saveInterval = setInterval(() => {
-    //   localStorage.setItem("timerValue", JSON.stringify(data));
-    //   console.log("hello", totalSeconds, seconds, minutes, hours);
-    // }, 5000);
-    // return () => {
-    //   clearInterval(saveInterval);
-    // };
-  }, []);
 
   return (
     <Card

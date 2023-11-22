@@ -3,10 +3,14 @@ import { useTimerContext } from "@/app/hooks/useTimerContext";
 import { Flex } from "@radix-ui/themes";
 import classNames from "classnames";
 import { CustomTimerToast } from "./TimerToast";
+import { useEffect } from "react";
 
 function TaskList() {
   const { timers, showToast, setShowToast, setTimers } = useTimerContext();
 
+  useEffect(() => {
+    console.log(timers, "From List");
+  }, []);
   return (
     <Flex
       direction={"column"}
