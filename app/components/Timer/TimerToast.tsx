@@ -3,7 +3,7 @@ import { useTimerContext } from "@/app/hooks/useTimerContext";
 import { PlayIcon, StopIcon, TimerIcon } from "@radix-ui/react-icons";
 import { Blockquote, Box, Button, Card, Flex, Text } from "@radix-ui/themes";
 import axios from "axios";
-import { useEffect } from "react";
+import { useEffect, useState } from "react";
 import { useStopwatch } from "react-timer-hook";
 
 // Pouvoir cliquer sur l'icone pou r creer un timer OK
@@ -29,6 +29,7 @@ export const CustomTimerToast = ({
   setTimers: (arg: any) => void;
   setShowToast: (showToast: boolean) => void;
 }) => {
+
   // Conversion totalseconds BDD en Date
   const stopwatchOffset = new Date();
   stopwatchOffset.setSeconds(stopwatchOffset.getSeconds() + timer.timer);
@@ -63,18 +64,17 @@ export const CustomTimerToast = ({
         // Mettez à jour les valeurs du timer avec les nouvelles valeurs
         return {
           ...t,
-          seconds: seconds,
-          minutes: minutes,
-          hours: hours,
+          seconds: seconds !== undefined ? seconds : t.seconds,
+          minutes: minutes !== undefined ? minutes : t.minutes,
+          hours: hours !== undefined ? hours : t.hours,
         };
       } else {
         return t;
       }
     });
-    console.log(updatedTimers);
     // Mettez à jour le tableau des timers avec les timers mis à jour
     setTimers(updatedTimers);
-  }, [totalSeconds, seconds, minutes, hours]);
+  }, [totalSeconds, seconds, minutes, hours, timer?.id]);
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (isRunning) {
@@ -95,7 +95,7 @@ export const CustomTimerToast = ({
   return (
     <Card
       className={`z-50  max-w-xs bg-white ${
-        showToast ? " slide-top" : "slide-down"
+        !showToast ? "slide-down" : "slide-top"
       }`}
       variant="classic"
       style={{ backgroundColor: "white" }}
@@ -151,6 +151,7 @@ type PropsTimerContent = {
   minutes: number;
   seconds: number;
   isToast: boolean;
+  totalSeconds?: number;
 };
 export const TimerContent = ({
   timer,
@@ -158,7 +159,17 @@ export const TimerContent = ({
   minutes,
   seconds,
   isToast,
+  totalSeconds,
 }: PropsTimerContent) => {
+  // Now you can use stopwatchOffset as needed
+  let secondsCustom;
+  let minutesCustom;
+  let hoursCustom;
+  if (totalSeconds !== undefined) {
+    secondsCustom = totalSeconds % 60;
+    minutesCustom = Math.floor((totalSeconds / 60) % 60);
+    hoursCustom = Math.floor(totalSeconds / 3600);
+  }
   return (
     <>
       {isToast && (
@@ -185,7 +196,11 @@ export const TimerContent = ({
           style={isToast ? { transform: "translate(-20%)" } : {}}
         >
           <Text as="p" weight={"regular"} size={`${isToast ? "5" : "2"}`}>
-            {hours}:{minutes}:{seconds}
+            {hours !== undefined &&
+            minutes !== undefined &&
+            seconds !== undefined
+              ? `${hours}:${minutes}:${seconds}`
+              : `${hoursCustom}:${minutesCustom}:${secondsCustom}`}
           </Text>
         </Box>
       </Flex>

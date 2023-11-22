@@ -6,7 +6,7 @@ import React from "react";
 
 const TimerButton = () => {
   const { timers, showToast, setShowToast } = useTimerContext();
-  if (timers.length === 0) return;
+  if (timers?.length === 0) return;
 
   return (
     <IconButton

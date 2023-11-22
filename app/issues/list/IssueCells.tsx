@@ -6,6 +6,8 @@ import { Flex, Table, Tooltip } from "@radix-ui/themes";
 import { IssueWithProject } from "./IssueTable";
 import { TimerContent } from "@/app/components/Timer/TimerToast";
 import axios from "axios";
+import { useEffect } from "react";
+import { time } from "console";
 interface Props {
   issues?: IssueWithProject[];
 }
@@ -18,7 +20,14 @@ const IssueCells = ({ issues }: Props) => {
     month: "long",
     day: "numeric",
   };
-
+  useEffect(() => {
+    if (issues) {
+      const updatedTimers = issues
+        .filter((issue) => issue.timer > 0)
+        .map((issue) => issue);
+      setTimers(updatedTimers);
+    }
+  }, [issues]);
   const createTimer = async (issue: any) => {
     const res = await axios.get("/api/issues/" + issue.id);
     const id = res.data.id;
@@ -32,7 +41,7 @@ const IssueCells = ({ issues }: Props) => {
   return issues?.map((issue) => {
     const date = new Date(issue.createdAt);
     const formatDate = date.toLocaleDateString(undefined, options);
-    const timerExists = timers.some((timer) => timer.id === issue.id);
+    const timerExists = timers?.some((timer) => timer.id === issue.id);
 
     return (
       <Table.Row key={issue.id}>
@@ -89,6 +98,7 @@ const IconeTimer = ({
             hours={timer.hours}
             minutes={timer.minutes}
             seconds={timer.seconds}
+            totalSeconds={timer?.timer}
             isToast={false}
           />
         ) : null;

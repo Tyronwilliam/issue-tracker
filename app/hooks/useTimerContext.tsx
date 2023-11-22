@@ -26,7 +26,7 @@ const TimerContext = createContext<StopwatchData | null>(null);
 // Créez un fournisseur de contexte
 export function TimerContextProvider({ children }: { children: ReactNode }) {
   const [timers, setTimers] = useState<any[]>([]);
-  const [showToast, setShowToast] = useState(true);
+  const [showToast, setShowToast] = useState(false);
   const [currentTimer, setCurrentTimer] = useState<number | null>(null);
 
   const value: StopwatchData = {

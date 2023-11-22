@@ -49,14 +49,14 @@ export async function PATCH(
           title,
           description,
           status,
-          timer: parseInt(timer),
+          timer: timer && parseInt(timer),
         }
       : {
           title,
           description,
           users,
           status,
-          timer: parseInt(timer),
+          timer: timer && parseInt(timer),
         };
 
   const updateIssue = await prisma.issue.update({
