@@ -29,11 +29,13 @@ export const CustomTimerToast = ({
   setTimers: (arg: any) => void;
   setShowToast: (showToast: boolean) => void;
 }) => {
+  // Conversion totalseconds BDD en Date
   const stopwatchOffset = new Date();
   stopwatchOffset.setSeconds(stopwatchOffset.getSeconds() + timer.timer);
 
   const { seconds, minutes, hours, pause, start, isRunning, totalSeconds } =
     useStopwatch({ offsetTimestamp: stopwatchOffset, autoStart: true });
+
   const { currentTimer, setCurrentTimer } = useTimerContext();
 
   const handleStart = async () => {
@@ -47,13 +49,12 @@ export const CustomTimerToast = ({
       timer: totalSeconds,
     });
     setShowToast(false);
-    console.log(updateTimer, "wesh");
   };
   useEffect(() => {
     if (currentTimer !== timer?.id) {
       pause();
     }
-  }, [timer, currentTimer]);
+  }, [timer?.id, currentTimer]);
 
   useEffect(() => {
     // Recherchez le bon timer dans le tableau en fonction de son ID
@@ -74,26 +75,26 @@ export const CustomTimerToast = ({
     // Mettez à jour le tableau des timers avec les timers mis à jour
     setTimers(updatedTimers);
   }, [totalSeconds, seconds, minutes, hours]);
-  // useEffect(() => {
-  //   const handleBeforeUnload = (event: BeforeUnloadEvent) => {
-  //     if (isRunning) {
-  //       // If the timer is running, show a confirmation message
-  //       const message =
-  //         "Un timer est en cours, êtes-vous sûr de vouloir quitter la page ?";
-  //       event.returnValue = message; // Standard for most browsers
-  //       return message; // For some older browsers
-  //     }
-  //   };
+  useEffect(() => {
+    const handleBeforeUnload = (event: BeforeUnloadEvent) => {
+      if (isRunning) {
+        // If the timer is running, show a confirmation message
+        const message =
+          "Un timer est en cours, êtes-vous sûr de vouloir quitter la page ?";
+        event.returnValue = message; // Standard for most browsers
+        return message; // For some older browsers
+      }
+    };
 
-  //   window.addEventListener("beforeunload", handleBeforeUnload);
+    window.addEventListener("beforeunload", handleBeforeUnload);
 
-  //   return () => {
-  //     window.removeEventListener("beforeunload", handleBeforeUnload);
-  //   };
-  // }, [isRunning]);
+    return () => {
+      window.removeEventListener("beforeunload", handleBeforeUnload);
+    };
+  }, [isRunning]);
   return (
     <Card
-      className={`z-50 slide-top max-w-xs bg-white ${
+      className={`z-50  max-w-xs bg-white ${
         showToast ? " slide-top" : "slide-down"
       }`}
       variant="classic"
@@ -181,9 +182,9 @@ export const TimerContent = ({
         )}
         <Box
           className="inline-block mx-auto"
-          style={{ transform: "translate(-20%)" }}
+          style={isToast ? { transform: "translate(-20%)" } : {}}
         >
-          <Text as="p" weight={"regular"} size={"5"}>
+          <Text as="p" weight={"regular"} size={`${isToast ? "5" : "2"}`}>
             {hours}:{minutes}:{seconds}
           </Text>
         </Box>
