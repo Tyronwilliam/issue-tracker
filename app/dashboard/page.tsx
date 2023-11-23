@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import ProjectsTable from "./ProjectsTable";
 import { Flex, Heading } from "@radix-ui/themes";
+import { getRandomColor } from "../utils/service/styleFunction";
 
 const ProjectsRecapPage = async () => {
   const session = await getServerSession(authOptions);
@@ -41,10 +42,11 @@ const ProjectsRecapPage = async () => {
 
     // Calculer le pourcentage d'avancement
     const avancement = totalIssues > 0 ? (closedIssues / totalIssues) * 100 : 0;
-
+    const bgColor = getRandomColor();
     return {
       projectId: project.id,
       avancement: avancement,
+      bgColor: bgColor,
     };
   });
 
@@ -64,6 +66,7 @@ const ProjectsRecapPage = async () => {
       <ProjectsTable
         projects={projectsAssociatedWithUser}
         totalTimeArray={totalTimeArray}
+        avancement={avancementArray}
       />
     </>
   );

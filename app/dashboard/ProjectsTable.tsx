@@ -5,11 +5,14 @@ import React from "react";
 import { IssueStatusBadge, Link } from "../components";
 import { useProjectContext } from "../hooks/useProjectContext";
 import { convertTotalSecondToUnit } from "../utils/service/timeFunction";
+import ProgressBar from "./ProgressBar";
+import { getRandomColor } from "../utils/service/styleFunction";
 interface Props {
   projects: Project[];
   totalTimeArray: { projectId: number; totalTime: number }[];
+  avancement: { projectId: number; avancement: number; bgColor: string }[];
 }
-const ProjectsTable = ({ projects, totalTimeArray }: Props) => {
+const ProjectsTable = ({ projects, totalTimeArray, avancement }: Props) => {
   const { setProjectId } = useProjectContext();
   return (
     <Table.Root variant="surface">
@@ -25,7 +28,9 @@ const ProjectsTable = ({ projects, totalTimeArray }: Props) => {
           <Table.ColumnHeaderCell className="hidden md:table-cell">
             Facturation
           </Table.ColumnHeaderCell>
-          <Table.ColumnHeaderCell>Avancement</Table.ColumnHeaderCell>
+          <Table.ColumnHeaderCell className="hidden md:table-cell">
+            Avancement
+          </Table.ColumnHeaderCell>
         </Table.Row>
       </Table.Header>
 
@@ -49,7 +54,21 @@ const ProjectsTable = ({ projects, totalTimeArray }: Props) => {
               <Table.Cell className="hidden md:table-cell">
                 Facturation
               </Table.Cell>
-              <Table.Cell>Avancement</Table.Cell>
+              {avancement?.map((pourcentage) => {
+                return (
+                  pourcentage?.projectId === project?.id && (
+                    <Table.Cell
+                      className="hidden md:table-cell "
+                      key={pourcentage?.projectId}
+                    >
+                      <ProgressBar
+                        progress={pourcentage?.avancement}
+                        bgColor={pourcentage.bgColor}
+                      />{" "}
+                    </Table.Cell>
+                  )
+                );
+              })}
             </Table.Row>
           );
         })}
