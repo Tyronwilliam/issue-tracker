@@ -107,7 +107,11 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
             </Flex>
             <IssueAction />
           </Flex>
-          <IssueTable searchParams={searchParams} issues={issues} />
+          <IssueTable
+            searchParams={searchParams}
+            issues={issues}
+            projectsAssociatedWithUser={projectsAssociatedWithUser}
+          />
           <Pagination
             itemCount={issueCount}
             pageSize={pageSize}

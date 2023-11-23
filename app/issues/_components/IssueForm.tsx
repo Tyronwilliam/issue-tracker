@@ -26,9 +26,9 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
   } = useForm<IssueFormData>({
     resolver: zodResolver(issueSchema),
   });
-  const router = useRouter();
   const { data: session } = useSession();
   const { projectId } = useProjectContext();
+  const router = useRouter();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -42,6 +42,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
         data.userId = session?.user?.id;
         await axios.post("/api/issues", data);
       }
+      setIsSubmitting(false);
       router.push("/issues/list?projectId=" + projectId);
       router.refresh();
     } catch (error: any) {
@@ -76,8 +77,8 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
           control={control}
           defaultValue={issue?.description}
           render={({ field }) => <SimpleMDE {...field} ref={null} />}
-        />{" "}
-        <ErrorMessage>{errors.description?.message}</ErrorMessage>
+        />
+        <ErrorMessage>{errors?.description?.message}</ErrorMessage>
         <Button disabled={isSubmitting}>
           {issue ? "Mettre à jour la tâche" : "Créer une nouvelle tâche"}
           {isSubmitting && <Spinner />}

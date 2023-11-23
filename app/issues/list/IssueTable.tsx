@@ -1,7 +1,8 @@
 import { Issue, Project, Status } from "@prisma/client";
-import { CaretSortIcon, PlusIcon } from "@radix-ui/react-icons";
-import { Box, Flex, IconButton, Table, Tooltip } from "@radix-ui/themes";
+import { CaretSortIcon } from "@radix-ui/react-icons";
+import { Box, Flex, Table } from "@radix-ui/themes";
 import NextLink from "next/link";
+import FastCreationIssue from "./FastCreationIssue";
 import IssueCells from "./IssueCells";
 
 export interface IssueQuery {
@@ -16,9 +17,14 @@ export type IssueWithProject = Omit<Issue, "Project"> & { Project?: Project };
 interface Props {
   searchParams: IssueQuery;
   issues?: IssueWithProject[];
+  projectsAssociatedWithUser: Project[];
 }
 
-const IssueTable = ({ searchParams, issues }: Props) => {
+const IssueTable = ({
+  searchParams,
+  issues,
+  projectsAssociatedWithUser,
+}: Props) => {
   return (
     <Flex align={"center"} gap={"4"} direction={"column"} width={"100%"}>
       <Box width={"100%"}>
@@ -52,11 +58,9 @@ const IssueTable = ({ searchParams, issues }: Props) => {
         </Table.Root>
       </Box>
       <Box>
-        <Tooltip content="Création rapide de tâche">
-          <IconButton radius="full">
-            <PlusIcon />
-          </IconButton>
-        </Tooltip>
+        <FastCreationIssue
+          projectsAssociatedWithUser={projectsAssociatedWithUser}
+        />
       </Box>
     </Flex>
   );

@@ -39,18 +39,18 @@ const IssueCells = ({ issues }: Props) => {
     setShowToast(true);
   };
   return issues?.map((issue) => {
-    const date = new Date(issue.createdAt);
+    const date = new Date(issue?.createdAt);
     const formatDate = date.toLocaleDateString(undefined, options);
-    const timerExists = timers?.some((timer) => timer.id === issue.id);
+    const timerExists = timers?.some((timer) => timer.id === issue?.id);
 
     return (
-      <Table.Row key={issue.id}>
+      <Table.Row key={issue?.id}>
         <Table.RowHeaderCell>
           <Flex align={"center"} width={"100%"} height={"100%"}>
-            <Link href={`/issues/${issue.id}`}>{issue.title}</Link>{" "}
+            <Link href={`/issues/${issue?.id}`}>{issue?.title}</Link>{" "}
           </Flex>
           <div className="block md:hidden">
-            <IssueStatusBadge status={issue.status} />
+            <IssueStatusBadge status={issue?.status} />
           </div>
         </Table.RowHeaderCell>
         <Table.Cell className="hidden md:table-cell">
@@ -70,7 +70,7 @@ const IssueCells = ({ issues }: Props) => {
         </Table.Cell>
         <Table.Cell className="hidden md:table-cell">
           <Flex align={"center"} width={"100%"} height={"100%"}>
-            {issue.Project && issue.Project.title}
+            {issue?.Project && issue?.Project.title}
           </Flex>
         </Table.Cell>
         <Table.Cell className="hidden md:table-cell">
@@ -105,9 +105,9 @@ const IconeTimer = ({
           <TimerContent
             key={timer?.id}
             timer={timer}
-            hours={timer.hours}
-            minutes={timer.minutes}
-            seconds={timer.seconds}
+            hours={timer?.hours}
+            minutes={timer?.minutes}
+            seconds={timer?.seconds}
             totalSeconds={timer?.timer}
             isToast={false}
           />

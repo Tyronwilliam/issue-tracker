@@ -5,6 +5,7 @@ import { getServerSession } from "next-auth";
 import dynamic from "next/dynamic";
 import AssignSelectProject from "./AssignSelectProject";
 import IssueFormSkeleton from "./loading";
+import LayoutNewIssue from "./LayoutNewIssue";
 
 const IssueForm = dynamic(() => import("@/app/issues/_components/IssueForm"), {
   ssr: false,
@@ -18,10 +19,7 @@ const NewIssuePage = async () => {
   );
   return (
     <Flex gap="5" direction={{ initial: "column-reverse", sm: "row" }}>
-      <IssueForm />
-      <Box className="w-fit">
-        <AssignSelectProject projects={projectsAssociatedWithUser} />
-      </Box>
+      <LayoutNewIssue projectsAssociatedWithUser={projectsAssociatedWithUser} />
     </Flex>
   );
 };
