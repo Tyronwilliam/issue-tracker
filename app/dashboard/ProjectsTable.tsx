@@ -42,22 +42,10 @@ const ProjectsTable = ({ projects, totalTimeArray }: Props) => {
                 </div>
               </Table.RowHeaderCell>
               <Table.Cell className="hidden md:table-cell">Client</Table.Cell>
-              {totalTimeArray?.map((time) => {
-                const { seconds, minutes, hours } = convertTotalSecondToUnit(
-                  time?.totalTime
-                );
-
-                return (
-                  time?.projectId === project?.id && (
-                    <Table.Cell
-                      className="hidden md:table-cell"
-                      key={time?.totalTime}
-                    >
-                      {`${hours}:${minutes}:${seconds}`}
-                    </Table.Cell>
-                  )
-                );
-              })}
+              <TimeCeil
+                totalTimeArray={totalTimeArray}
+                projectId={project?.id}
+              />
               <Table.Cell className="hidden md:table-cell">
                 Facturation
               </Table.Cell>
@@ -71,3 +59,24 @@ const ProjectsTable = ({ projects, totalTimeArray }: Props) => {
 };
 
 export default ProjectsTable;
+
+const TimeCeil = ({
+  totalTimeArray,
+  projectId,
+}: {
+  totalTimeArray: { projectId: number; totalTime: number }[];
+  projectId: number;
+}) => {
+  return totalTimeArray?.map((time) => {
+    const { seconds, minutes, hours } = convertTotalSecondToUnit(
+      time?.totalTime
+    );
+    return (
+      time?.projectId === projectId && (
+        <Table.Cell className="hidden md:table-cell" key={time?.totalTime}>
+          {`${hours}:${minutes}:${seconds}`}
+        </Table.Cell>
+      )
+    );
+  });
+};
