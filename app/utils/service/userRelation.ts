@@ -12,6 +12,9 @@ export const getProjectsAssociatedWithUser = async (
         },
       },
     },
+    include: {
+      issueId: true,
+    },
   });
 
   return project;

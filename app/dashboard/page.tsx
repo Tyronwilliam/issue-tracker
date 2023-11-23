@@ -15,6 +15,19 @@ const ProjectsRecapPage = async () => {
   if (projectsAssociatedWithUser?.length === 0)
     return <CreateProject session={session} />;
 
+  const totalTimeArray = projectsAssociatedWithUser.map((project) => {
+    const projectTime = project?.issueId?.reduce((projectAcc, issue) => {
+      const time = issue?.timer || 0;
+      return projectAcc + time;
+    }, 0);
+
+    return {
+      projectId: project.id,
+      totalTime: projectTime,
+    };
+  });
+
+
   return (
     <>
       <Flex
@@ -26,7 +39,10 @@ const ProjectsRecapPage = async () => {
         <Heading>Projets</Heading>
         <DialogProject session={session} />
       </Flex>
-      <ProjectsTable projects={projectsAssociatedWithUser} />
+      <ProjectsTable
+        projects={projectsAssociatedWithUser}
+        totalTimeArray={totalTimeArray}
+      />
     </>
   );
 };

@@ -4,10 +4,12 @@ import { Table } from "@radix-ui/themes";
 import React from "react";
 import { IssueStatusBadge, Link } from "../components";
 import { useProjectContext } from "../hooks/useProjectContext";
+import { convertTotalSecondToUnit } from "../utils/service/timeFunction";
 interface Props {
   projects: Project[];
+  totalTimeArray: { projectId: number; totalTime: number }[];
 }
-const ProjectsTable = ({ projects }: Props) => {
+const ProjectsTable = ({ projects, totalTimeArray }: Props) => {
   const { setProjectId } = useProjectContext();
   return (
     <Table.Root variant="surface">
@@ -40,7 +42,22 @@ const ProjectsTable = ({ projects }: Props) => {
                 </div>
               </Table.RowHeaderCell>
               <Table.Cell className="hidden md:table-cell">Client</Table.Cell>
-              <Table.Cell className="hidden md:table-cell">Temps</Table.Cell>
+              {totalTimeArray?.map((time) => {
+                const { seconds, minutes, hours } = convertTotalSecondToUnit(
+                  time?.totalTime
+                );
+
+                return (
+                  time?.projectId === project?.id && (
+                    <Table.Cell
+                      className="hidden md:table-cell"
+                      key={time?.totalTime}
+                    >
+                      {`${hours}:${minutes}:${seconds}`}
+                    </Table.Cell>
+                  )
+                );
+              })}
               <Table.Cell className="hidden md:table-cell">
                 Facturation
               </Table.Cell>

@@ -30,7 +30,7 @@ const NavBar = () => {
 
   const currentPath = usePathname();
   return (
-    <nav className="border-b mb-5 px-5 py-5">
+    <nav className="border-b mb-5 px-5 py-5 z-30 relative">
       <Container>
         <Flex align="center" justify="between">
           <Flex align="center" gap="5">

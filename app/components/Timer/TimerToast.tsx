@@ -1,9 +1,14 @@
 "use client";
 import { useTimerContext } from "@/app/hooks/useTimerContext";
+import {
+  applyFormatting,
+  convertTotalSecondToUnit,
+} from "@/app/utils/service/timeFunction";
 import { PlayIcon, StopIcon, TimerIcon } from "@radix-ui/react-icons";
 import { Blockquote, Box, Button, Card, Flex, Text } from "@radix-ui/themes";
 import axios from "axios";
-import { useEffect, useState } from "react";
+import { useRouter } from "next/navigation";
+import { useEffect } from "react";
 import { useStopwatch } from "react-timer-hook";
 
 // Pouvoir cliquer sur l'icone pou r creer un timer OK
@@ -29,13 +34,13 @@ export const CustomTimerToast = ({
   setTimers: (arg: any) => void;
   setShowToast: (showToast: boolean) => void;
 }) => {
-
   // Conversion totalseconds BDD en Date
   const stopwatchOffset = new Date();
   stopwatchOffset.setSeconds(stopwatchOffset.getSeconds() + timer.timer);
 
+  const router = useRouter();
   const { seconds, minutes, hours, pause, start, isRunning, totalSeconds } =
-    useStopwatch({ offsetTimestamp: stopwatchOffset, autoStart: true });
+    useStopwatch({ offsetTimestamp: stopwatchOffset });
 
   const { currentTimer, setCurrentTimer } = useTimerContext();
 
@@ -46,9 +51,14 @@ export const CustomTimerToast = ({
 
   const handlePause = async () => {
     pause();
-    const updateTimer = await axios.patch("/api/issues/" + timer.id, {
-      timer: totalSeconds,
-    });
+    await axios
+      .patch("/api/issues/" + timer.id, {
+        timer: totalSeconds,
+      })
+      .then((res) => {
+        res.status === 200 && router.refresh();
+      })
+      .catch((err) => err);
     setShowToast(false);
   };
   useEffect(() => {
@@ -166,10 +176,14 @@ export const TimerContent = ({
   let minutesCustom;
   let hoursCustom;
   if (totalSeconds !== undefined) {
-    secondsCustom = totalSeconds % 60;
-    minutesCustom = Math.floor((totalSeconds / 60) % 60);
-    hoursCustom = Math.floor(totalSeconds / 3600);
+    const { seconds, minutes, hours } = convertTotalSecondToUnit(totalSeconds);
+
+    secondsCustom = seconds;
+    minutesCustom = minutes;
+    hoursCustom = hours;
   }
+  const { formattedSeconds, formattedMinutes, formattedHours } =
+    applyFormatting(seconds, minutes, hours);
   return (
     <>
       {isToast && (
@@ -199,7 +213,7 @@ export const TimerContent = ({
             {hours !== undefined &&
             minutes !== undefined &&
             seconds !== undefined
-              ? `${hours}:${minutes}:${seconds}`
+              ? `${formattedHours}:${formattedMinutes}:${formattedSeconds}`
               : `${hoursCustom}:${minutesCustom}:${secondsCustom}`}
           </Text>
         </Box>

@@ -7,7 +7,6 @@ import { IssueWithProject } from "./IssueTable";
 import { TimerContent } from "@/app/components/Timer/TimerToast";
 import axios from "axios";
 import { useEffect } from "react";
-import { time } from "console";
 interface Props {
   issues?: IssueWithProject[];
 }
