@@ -50,8 +50,6 @@ const ProjectsRecapPage = async () => {
     };
   });
 
-  console.log(avancementArray); // Le tableau d'objets avec l'id du projet et son avancement basé sur les issues "CLOSED"
-
   return (
     <>
       <Flex

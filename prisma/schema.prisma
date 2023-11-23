@@ -16,6 +16,13 @@ enum Status {
   CLOSED
 }
 
+model CategorieCustom {
+  id    Int     @id @default(autoincrement())
+  label String
+  value String  @unique
+  Issue Issue[]
+}
+
 model Project {
   id        Int      @id @default(autoincrement())
   title     String   @db.VarChar(50)
@@ -27,16 +34,18 @@ model Project {
 }
 
 model Issue {
-  id          Int      @id @default(autoincrement())
-  title       String   @db.VarChar(255) //varchar (191)
-  description String   @db.Text
-  status      Status   @default(OPEN)
-  createdAt   DateTime @default(now())
-  updatedAt   DateTime @updatedAt
-  Project     Project? @relation(fields: [projectId], references: [id])
-  projectId   Int?
-  users       User[]
-  timer       Int      @default(0)
+  id                Int             @id @default(autoincrement())
+  title             String          @db.VarChar(255) //varchar (191)
+  description       String          @db.Text
+  status            Status          @default(OPEN)
+  createdAt         DateTime        @default(now())
+  updatedAt         DateTime        @updatedAt
+  Project           Project?        @relation(fields: [projectId], references: [id])
+  projectId         Int?
+  users             User[]
+  timer             Int             @default(0)
+  categorie         CategorieCustom @relation(fields: [categorieCustomId], references: [id])
+  categorieCustomId Int
 }
 
 model User {

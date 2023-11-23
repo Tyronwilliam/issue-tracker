@@ -26,10 +26,10 @@ const ProjectsTable = ({ projects, totalTimeArray, avancement }: Props) => {
             Temps Total
           </Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell className="hidden md:table-cell">
-            Facturation
+            Avancement
           </Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell className="hidden md:table-cell">
-            Avancement
+            Facturation
           </Table.ColumnHeaderCell>
         </Table.Row>
       </Table.Header>
@@ -51,9 +51,6 @@ const ProjectsTable = ({ projects, totalTimeArray, avancement }: Props) => {
                 totalTimeArray={totalTimeArray}
                 projectId={project?.id}
               />
-              <Table.Cell className="hidden md:table-cell">
-                Facturation
-              </Table.Cell>
               {avancement?.map((pourcentage) => {
                 return (
                   pourcentage?.projectId === project?.id && (
@@ -64,11 +61,14 @@ const ProjectsTable = ({ projects, totalTimeArray, avancement }: Props) => {
                       <ProgressBar
                         progress={pourcentage?.avancement}
                         bgColor={pourcentage.bgColor}
-                      />{" "}
+                      />
                     </Table.Cell>
                   )
                 );
               })}
+              <Table.Cell className="hidden md:table-cell">
+                Facturation
+              </Table.Cell>
             </Table.Row>
           );
         })}
