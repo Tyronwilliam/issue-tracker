@@ -54,7 +54,7 @@ const IssueCells = ({ issues }: Props) => {
           </div>
         </Table.RowHeaderCell>
         <Table.Cell className="hidden md:table-cell">
-          <Flex align={"center"} width={"100%"} height={"100%"}>
+          <Flex align={"center"} height={"100%"} className="w-24">
             <AssignStatus issue={issue} isFromCeil={true} />{" "}
           </Flex>
         </Table.Cell>

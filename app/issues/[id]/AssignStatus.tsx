@@ -49,6 +49,7 @@ const AssignStatus = ({
         <Select.Trigger
           color={color}
           variant={`${isFromCeil ? "soft" : "surface"}`}
+          className="w-full"
         />
         <Select.Content position="popper" color={color}>
           {statuses.map((etat) => {
