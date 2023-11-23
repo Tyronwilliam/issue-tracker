@@ -53,9 +53,10 @@ const IssueTable = ({ searchParams, issues }: Props) => {
 const columns: { label: string; value: keyof Issue; className?: string }[] = [
   { label: "Tache", value: "title" },
   { label: "Statut", value: "status", className: "hidden md:table-cell" },
+
   {
-    label: "Créer le",
-    value: "createdAt",
+    label: "Minuteur",
+    value: "title",
     className: "hidden md:table-cell",
   },
   {
@@ -64,8 +65,8 @@ const columns: { label: string; value: keyof Issue; className?: string }[] = [
     className: "hidden md:table-cell",
   },
   {
-    label: "Minuteur",
-    value: "title",
+    label: "Créer le",
+    value: "createdAt",
     className: "hidden md:table-cell",
   },
 ];

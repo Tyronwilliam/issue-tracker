@@ -7,6 +7,7 @@ import { IssueWithProject } from "./IssueTable";
 import { TimerContent } from "@/app/components/Timer/TimerToast";
 import axios from "axios";
 import { useEffect } from "react";
+import AssignStatus from "../[id]/AssignStatus";
 interface Props {
   issues?: IssueWithProject[];
 }
@@ -45,26 +46,36 @@ const IssueCells = ({ issues }: Props) => {
     return (
       <Table.Row key={issue.id}>
         <Table.RowHeaderCell>
-          <Link href={`/issues/${issue.id}`}>{issue.title}</Link>
+          <Flex align={"center"} width={"100%"} height={"100%"}>
+            <Link href={`/issues/${issue.id}`}>{issue.title}</Link>{" "}
+          </Flex>
           <div className="block md:hidden">
             <IssueStatusBadge status={issue.status} />
           </div>
         </Table.RowHeaderCell>
         <Table.Cell className="hidden md:table-cell">
-          <IssueStatusBadge status={issue.status} />
-        </Table.Cell>
-        <Table.Cell className="hidden md:table-cell">{formatDate}</Table.Cell>
-        <Table.Cell className="hidden md:table-cell">
-          {issue.Project && issue.Project.title}
+          <Flex align={"center"} width={"100%"} height={"100%"}>
+            <AssignStatus issue={issue} isFromCeil={true} />{" "}
+          </Flex>
         </Table.Cell>
         <Table.Cell className="hidden md:table-cell mx-auto">
-          <Flex gap={"2"} align={"center"}>
+          <Flex gap={"2"} align={"center"} width={"100%"} height={"100%"}>
             <IconeTimer
               timerExists={timerExists}
               createTimer={createTimer}
               issue={issue}
               timers={timers}
             />
+          </Flex>
+        </Table.Cell>
+        <Table.Cell className="hidden md:table-cell">
+          <Flex align={"center"} width={"100%"} height={"100%"}>
+            {issue.Project && issue.Project.title}
+          </Flex>
+        </Table.Cell>
+        <Table.Cell className="hidden md:table-cell">
+          <Flex align={"center"} width={"100%"} height={"100%"}>
+            {formatDate}{" "}
           </Flex>
         </Table.Cell>
       </Table.Row>
