@@ -4,7 +4,7 @@ import { useProjectContext } from "@/app/hooks/useProjectContext";
 import { issueSchema } from "@/app/validationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Issue } from "@prisma/client";
-import { Box, Button, Callout, TextField } from "@radix-ui/themes";
+import { Box, Button, Callout, Dialog, TextField } from "@radix-ui/themes";
 import axios from "axios";
 import "easymde/dist/easymde.min.css";
 import { useSession } from "next-auth/react";
@@ -82,7 +82,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
         <Button disabled={isSubmitting}>
           {issue ? "Mettre à jour la tâche" : "Créer une nouvelle tâche"}
           {isSubmitting && <Spinner />}
-        </Button>
+        </Button>{" "}
       </form>
     </Box>
   );

@@ -26,7 +26,13 @@ const IssueTable = ({
   projectsAssociatedWithUser,
 }: Props) => {
   return (
-    <Flex align={"center"} gap={"4"} direction={"column"} width={"100%"}>
+    <Flex
+      align={"center"}
+      gap={"4"}
+      direction={"column"}
+      width={"100%"}
+      height={"100%"}
+    >
       <Box width={"100%"}>
         <Table.Root variant="surface">
           <Table.Header>

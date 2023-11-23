@@ -45,7 +45,7 @@ const ProjectsRecapPage = async () => {
     const bgColor = getRandomColor();
     return {
       projectId: project.id,
-      avancement: avancement,
+      avancement: Math.round(avancement),
       bgColor: bgColor,
     };
   });

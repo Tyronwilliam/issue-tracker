@@ -45,13 +45,18 @@ const IssueCells = ({ issues }: Props) => {
 
     return (
       <Table.Row key={issue?.id}>
-        <Table.RowHeaderCell>
-          <Flex align={"center"} width={"100%"} height={"100%"}>
+        <Table.RowHeaderCell className="h-fit">
+          <Flex
+            width={"100%"}
+            height={"100%"}
+            gap={"3"}
+            className="flex flex-col	item-start md:flex-row	 md:items-center"
+          >
             <Link href={`/issues/${issue?.id}`}>{issue?.title}</Link>{" "}
+            <div className="block md:hidden">
+              <IssueStatusBadge status={issue?.status} />
+            </div>
           </Flex>
-          <div className="block md:hidden">
-            <IssueStatusBadge status={issue?.status} />
-          </div>
         </Table.RowHeaderCell>
         <Table.Cell className="hidden md:table-cell">
           <Flex align={"center"} height={"100%"} className="w-24">
