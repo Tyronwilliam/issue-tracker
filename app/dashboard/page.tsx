@@ -27,6 +27,28 @@ const ProjectsRecapPage = async () => {
     };
   });
 
+  const avancementArray = projectsAssociatedWithUser.map((project) => {
+    // Compter le nombre total d'issues et le nombre d'issues "CLOSED"
+    let totalIssues = 0;
+    let closedIssues = 0;
+
+    project?.issueId?.forEach((issue) => {
+      totalIssues++;
+      if (issue.status === "CLOSED") {
+        closedIssues++;
+      }
+    });
+
+    // Calculer le pourcentage d'avancement
+    const avancement = totalIssues > 0 ? (closedIssues / totalIssues) * 100 : 0;
+
+    return {
+      projectId: project.id,
+      avancement: avancement,
+    };
+  });
+
+  console.log(avancementArray); // Le tableau d'objets avec l'id du projet et son avancement basé sur les issues "CLOSED"
 
   return (
     <>

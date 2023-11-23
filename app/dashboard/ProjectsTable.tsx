@@ -20,7 +20,7 @@ const ProjectsTable = ({ projects, totalTimeArray }: Props) => {
             Client
           </Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell className="hidden md:table-cell">
-            Temps
+            Temps Total
           </Table.ColumnHeaderCell>
           <Table.ColumnHeaderCell className="hidden md:table-cell">
             Facturation
