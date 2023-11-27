@@ -1,4 +1,3 @@
-// useProjectContext.tsx
 "use client";
 import {
   Dispatch,
@@ -9,10 +8,11 @@ import {
   useState,
 } from "react";
 import TimerButton from "../components/Timer/TimerButton";
+import { Issue } from "@prisma/client";
 
 // Définissez le type pour les données de contexte
 type StopwatchData = {
-  timers: any[];
+  timers: Issue[];
   setTimers: Dispatch<SetStateAction<any[]>>;
   showToast: boolean;
   setShowToast: (showToast: boolean) => void;
@@ -28,7 +28,6 @@ export function TimerContextProvider({ children }: { children: ReactNode }) {
   const [timers, setTimers] = useState<any[]>([]);
   const [showToast, setShowToast] = useState(false);
   const [currentTimer, setCurrentTimer] = useState<number | null>(null);
-
   const value: StopwatchData = {
     timers,
     setTimers,
@@ -37,7 +36,6 @@ export function TimerContextProvider({ children }: { children: ReactNode }) {
     currentTimer,
     setCurrentTimer,
   };
-  // Define a key for your totalSeconds in localStorage
   return (
     <TimerContext.Provider value={value}>
       {children}

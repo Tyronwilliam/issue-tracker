@@ -1,11 +1,12 @@
 import React from "react";
 import { getProjectsAssociatedWithUser } from "../utils/service/userRelation";
-import { CreateProject, DialogProject } from "./projects/[id]/CreateProject";
+import { CreateProject } from "./projects/[id]/CreateProject";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import ProjectsTable from "./ProjectsTable";
 import { Flex, Heading } from "@radix-ui/themes";
 import { getRandomColor } from "../utils/service/styleFunction";
+import DialogProject from "./projects/[id]/DialogProject";
 
 const ProjectsRecapPage = async () => {
   const session = await getServerSession(authOptions);

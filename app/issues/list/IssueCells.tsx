@@ -1,13 +1,15 @@
 "use client";
 import { IssueStatusBadge, Link } from "@/app/components";
+import { TimerContent } from "@/app/components/Timer/TimerContent";
 import { useTimerContext } from "@/app/hooks/useTimerContext";
+import { Time, options } from "@/app/utils/service/timeFunction";
+import { Issue } from "@prisma/client";
 import { PlayIcon } from "@radix-ui/react-icons";
 import { Flex, Table, Tooltip } from "@radix-ui/themes";
-import { IssueWithProject } from "./IssueTable";
-import { TimerContent } from "@/app/components/Timer/TimerToast";
 import axios from "axios";
-import { useEffect } from "react";
+import React, { useEffect } from "react";
 import AssignStatus from "../[id]/AssignStatus";
+import { IssueWithProject } from "./IssueTable";
 interface Props {
   issues?: IssueWithProject[];
 }
@@ -15,11 +17,6 @@ const IssueCells = ({ issues }: Props) => {
   const { timers, setTimers, setShowToast, setCurrentTimer } =
     useTimerContext();
 
-  const options: Intl.DateTimeFormatOptions = {
-    year: "numeric",
-    month: "long",
-    day: "numeric",
-  };
   useEffect(() => {
     if (issues) {
       const updatedTimers = issues
@@ -28,7 +25,8 @@ const IssueCells = ({ issues }: Props) => {
       setTimers(updatedTimers);
     }
   }, [issues]);
-  const createTimer = async (issue: any) => {
+
+  const createTimer = async (issue: Issue) => {
     const res = await axios.get("/api/issues/" + issue.id);
     const id = res.data.id;
     const freshIssue = res.data;
@@ -70,6 +68,8 @@ const IssueCells = ({ issues }: Props) => {
               createTimer={createTimer}
               issue={issue}
               timers={timers}
+              setCurrentTimer={setCurrentTimer}
+              setShowToast={setShowToast}
             />
           </Flex>
         </Table.Cell>
@@ -92,39 +92,73 @@ export default IssueCells;
 
 type IconeTimerProps = {
   timerExists: boolean;
-  createTimer: (issue: any) => void;
+  createTimer: (issue: Issue) => void;
   issue: IssueWithProject;
-  timers: any[];
+  timers: Issue[];
+  setCurrentTimer: (arg: number) => void;
+  setShowToast: (arg: boolean) => void;
 };
-
+export type IssueWithTime = Issue & Time;
 const IconeTimer = ({
   timerExists,
   createTimer,
   issue,
   timers,
+  setCurrentTimer,
+  setShowToast,
 }: IconeTimerProps) => {
   return timerExists ? (
     <>
-      {timers.map((timer) => {
+      {timers.map((timer: any) => {
         return timer?.id === issue?.id ? (
-          <TimerContent
-            key={timer?.id}
-            timer={timer}
-            hours={timer?.hours}
-            minutes={timer?.minutes}
-            seconds={timer?.seconds}
-            totalSeconds={timer?.timer}
-            isToast={false}
-          />
+          <React.Fragment key={timer?.id}>
+            <TimerContent
+              timer={timer}
+              hours={timer?.hours}
+              minutes={timer?.minutes}
+              seconds={timer?.seconds}
+              totalSeconds={timer?.timer}
+              isToast={false}
+            />
+            <ResumeTimer
+              setCurrentTimer={setCurrentTimer}
+              setShowToast={setShowToast}
+              issue={issue}
+            />
+          </React.Fragment>
         ) : null;
       })}
     </>
   ) : (
+    <ResumeTimer createTimer={createTimer} issue={issue} />
+  );
+};
+
+const ResumeTimer = ({
+  createTimer,
+  issue,
+  setCurrentTimer,
+  setShowToast,
+}: {
+  createTimer?: (arg: Issue) => void;
+  issue: Issue;
+  setCurrentTimer?: (arg: number) => void;
+  setShowToast?: (arg: boolean) => void;
+}) => {
+  return (
     <Tooltip content="Start" style={{ backgroundColor: "var(--accent-9)" }}>
       <PlayIcon
         style={{ color: "var(--accent-11)" }}
         className="cursor-pointer"
-        onClick={() => createTimer(issue)}
+        onClick={() => {
+          if (createTimer) {
+            createTimer(issue);
+          }
+          if (setCurrentTimer && setShowToast) {
+            setCurrentTimer(issue?.id);
+            setShowToast(true);
+          }
+        }}
       />
     </Tooltip>
   );

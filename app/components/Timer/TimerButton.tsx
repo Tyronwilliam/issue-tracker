@@ -5,8 +5,8 @@ import { IconButton } from "@radix-ui/themes";
 import React from "react";
 
 const TimerButton = () => {
-  const { timers, showToast, setShowToast } = useTimerContext();
-  if (timers?.length === 0) return;
+  const { timers, showToast, setShowToast, currentTimer } = useTimerContext();
+  if (timers?.length === 0 || !currentTimer) return;
 
   return (
     <IconButton
