@@ -1,6 +1,8 @@
 "use client";
 import { ErrorMessage, Spinner } from "@/app/components";
+import { useIssueContext } from "@/app/hooks/useIssueContext";
 import { useProjectContext } from "@/app/hooks/useProjectContext";
+import { convertIntoTotalSecond } from "@/app/utils/service/timeFunction";
 import { issueSchema } from "@/app/validationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Issue } from "@prisma/client";
@@ -28,6 +30,7 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
   });
   const { data: session } = useSession();
   const { projectId } = useProjectContext();
+  const { issueTime } = useIssueContext();
   const router = useRouter();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
@@ -36,8 +39,18 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
     try {
       setIsSubmitting(true);
       if (issue) {
+        if (issueTime) {
+          const convertIssueTime = convertIntoTotalSecond(issueTime as string);
+          console.log(convertIssueTime, "so what");
+          data.timer = convertIssueTime;
+        }
         await axios.patch(`/api/issues/${issue.id}`, data);
       } else {
+        if (issueTime) {
+          const convertIssueTime = convertIntoTotalSecond(issueTime as string);
+          console.log(convertIssueTime, "so what");
+          data.timer = convertIssueTime;
+        }
         data.projectId = projectId || undefined;
         data.userId = session?.user?.id;
         await axios.post("/api/issues", data);

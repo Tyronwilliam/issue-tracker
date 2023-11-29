@@ -1,3 +1,11 @@
+import { Issue } from "@prisma/client";
+import axios, { AxiosResponse } from "axios";
+
+export interface Time {
+  hours?: number;
+  minutes?: number;
+  seconds?: number;
+}
 const formatTimeUnit = (unit: number): string =>
   unit < 10 ? `0${unit}` : `${unit}`;
 
@@ -18,7 +26,15 @@ export const convertTotalSecondToUnit = (totalSeconds: number) => {
     hours: formattedHours,
   };
 };
+export function convertIntoTotalSecond(duree: string) {
+  // Séparer les heures, minutes et secondes
+  const [heures, minutes, secondes] = duree.split(":").map(Number);
 
+  // Calculer le total de secondes
+  const totalSecondes = heures * 3600 + minutes * 60 + secondes;
+
+  return totalSecondes;
+}
 export const applyFormatting = (
   seconds: number,
   minutes: number,
@@ -33,4 +49,21 @@ export const applyFormatting = (
   const formattedHours = formatTimeUnit(hours);
 
   return { formattedSeconds, formattedMinutes, formattedHours };
+};
+export const options: Intl.DateTimeFormatOptions = {
+  year: "numeric",
+  month: "long",
+  day: "numeric",
+};
+
+export const updateTimeOnPause = async (
+  totalSeconds: number,
+  timer: Issue
+): Promise<AxiosResponse<Response>> => {
+  return await axios
+    .patch("/api/issues/" + timer.id, {
+      timer: totalSeconds,
+    })
+    .then((res) => res)
+    .catch((err) => err);
 };

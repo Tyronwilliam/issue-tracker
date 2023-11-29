@@ -1,11 +1,12 @@
 import React from "react";
 import { getProjectsAssociatedWithUser } from "../utils/service/userRelation";
-import { CreateProject, DialogProject } from "./projects/[id]/CreateProject";
+import { CreateProject } from "./projects/[id]/CreateProject";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import ProjectsTable from "./ProjectsTable";
 import { Flex, Heading } from "@radix-ui/themes";
 import { getRandomColor } from "../utils/service/styleFunction";
+import DialogProject from "./projects/[id]/DialogProject";
 
 const ProjectsRecapPage = async () => {
   const session = await getServerSession(authOptions);
@@ -16,7 +17,7 @@ const ProjectsRecapPage = async () => {
   if (projectsAssociatedWithUser?.length === 0)
     return <CreateProject session={session} />;
 
-  const totalTimeArray = projectsAssociatedWithUser.map((project) => {
+  const totalTimeArray = projectsAssociatedWithUser?.map((project) => {
     const projectTime = project?.issueId?.reduce((projectAcc, issue) => {
       const time = issue?.timer || 0;
       return projectAcc + time;
@@ -28,7 +29,7 @@ const ProjectsRecapPage = async () => {
     };
   });
 
-  const avancementArray = projectsAssociatedWithUser.map((project) => {
+  const avancementArray = projectsAssociatedWithUser?.map((project) => {
     // Compter le nombre total d'issues et le nombre d'issues "CLOSED"
     let totalIssues = 0;
     let closedIssues = 0;

@@ -1,26 +1,15 @@
 "use client";
 import { useTimerContext } from "@/app/hooks/useTimerContext";
-import {
-  applyFormatting,
-  convertTotalSecondToUnit,
-} from "@/app/utils/service/timeFunction";
-import { PlayIcon, StopIcon, TimerIcon } from "@radix-ui/react-icons";
-import { Blockquote, Box, Button, Card, Flex, Text } from "@radix-ui/themes";
-import axios from "axios";
+import { updateTimeOnPause } from "@/app/utils/service/timeFunction";
+import { Card, Flex } from "@radix-ui/themes";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useStopwatch } from "react-timer-hook";
+import TimerAction from "./TimerAction";
+import { TimerContent } from "./TimerContent";
+import { IssueWithTime } from "@/app/issues/list/IssueCells";
+import classNames from "classnames";
 
-// Pouvoir cliquer sur l'icone pou r creer un timer OK
-// Si il y a une valeur differente de 0 alors on initialise le timer a la aleur de la bdd
-// Lorsque le timer est lancé je ne peux pas lancer le meme  OK
-// Le timer se declenche automatiquement OK
-// Si on declenche un timer alors qu'il y en as un qui tourne / Modal avertissement etes vous sur de vouloir arreter le timer actuelle = Current
-//
-// On ne peux pas lancer deux timer a la fois OK
-// Si deja un timer alors on stop le timer actuel OK
-// On sauvegarde la valeur du timer OK
-// Back to step 1
 export const CustomTimerToast = ({
   timer,
   showToast,
@@ -28,21 +17,20 @@ export const CustomTimerToast = ({
   timers,
   setTimers,
 }: {
-  timers: any[];
-  timer: any;
+  timers: IssueWithTime[];
+  timer: IssueWithTime;
   showToast: boolean;
   setTimers: (arg: any) => void;
   setShowToast: (showToast: boolean) => void;
 }) => {
   // Conversion totalseconds BDD en Date
+  const router = useRouter();
+  const { currentTimer, setCurrentTimer } = useTimerContext();
+
   const stopwatchOffset = new Date();
   stopwatchOffset.setSeconds(stopwatchOffset.getSeconds() + timer.timer);
-
-  const router = useRouter();
   const { seconds, minutes, hours, pause, start, isRunning, totalSeconds } =
     useStopwatch({ offsetTimestamp: stopwatchOffset });
-
-  const { currentTimer, setCurrentTimer } = useTimerContext();
 
   const handleStart = async () => {
     setCurrentTimer(timer?.id);
@@ -51,14 +39,11 @@ export const CustomTimerToast = ({
 
   const handlePause = async () => {
     pause();
-    await axios
-      .patch("/api/issues/" + timer.id, {
-        timer: totalSeconds,
-      })
-      .then((res) => {
-        res.status === 200 && router.refresh();
-      })
-      .catch((err) => err);
+    const res = await updateTimeOnPause(totalSeconds, timer);
+    if (res?.status === 200) {
+      router.refresh();
+    }
+
     setShowToast(false);
   };
   useEffect(() => {
@@ -85,6 +70,7 @@ export const CustomTimerToast = ({
     // Mettez à jour le tableau des timers avec les timers mis à jour
     setTimers(updatedTimers);
   }, [totalSeconds, seconds, minutes, hours, timer?.id]);
+
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
       if (isRunning) {
@@ -104,9 +90,12 @@ export const CustomTimerToast = ({
   }, [isRunning]);
   return (
     <Card
-      className={`z-50  max-w-xs bg-white ${
-        !showToast ? "slide-down" : "slide-top"
-      }`}
+      className={classNames({
+        "z-50  max-w-xs bg-white hidden":
+          currentTimer !== timer?.id || !showToast,
+        "z-50  max-w-xs bg-white slide-top":
+          currentTimer === timer?.id && showToast,
+      })}
       variant="classic"
       style={{ backgroundColor: "white" }}
     >
@@ -125,99 +114,5 @@ export const CustomTimerToast = ({
         />
       </Flex>
     </Card>
-  );
-};
-
-type PropsTimerAction = {
-  isRunning: boolean;
-  handlePause: () => void;
-  handleStart: () => void;
-};
-const TimerAction = ({
-  isRunning,
-  handlePause,
-  handleStart,
-}: PropsTimerAction) => {
-  return isRunning ? (
-    <Button onClick={handlePause}>
-      <StopIcon style={{ color: "var(--accent-11)" }} />
-      Pause
-    </Button>
-  ) : (
-    <Button
-      onClick={handleStart}
-      className="flex items-center border-[1px] p-2 rounded-mb"
-      style={{ backgroundColor: "var(--accent-9)" }}
-    >
-      <PlayIcon />
-      Démarrer
-    </Button>
-  );
-};
-
-type PropsTimerContent = {
-  timer: any;
-  hours: number;
-  minutes: number;
-  seconds: number;
-  isToast: boolean;
-  totalSeconds?: number;
-};
-export const TimerContent = ({
-  timer,
-  hours,
-  minutes,
-  seconds,
-  isToast,
-  totalSeconds,
-}: PropsTimerContent) => {
-  // Now you can use stopwatchOffset as needed
-  let secondsCustom;
-  let minutesCustom;
-  let hoursCustom;
-  if (totalSeconds !== undefined) {
-    const { seconds, minutes, hours } = convertTotalSecondToUnit(totalSeconds);
-
-    secondsCustom = seconds;
-    minutesCustom = minutes;
-    hoursCustom = hours;
-  }
-  const { formattedSeconds, formattedMinutes, formattedHours } =
-    applyFormatting(seconds, minutes, hours);
-  return (
-    <>
-      {isToast && (
-        <Box className=" overflow-hidden  whitespace-nowrap ">
-          <Text
-            as="p"
-            className=" inline-block w-[100%] z-[100] animate-scrolling-text slide-left"
-          >
-            {timer.title}
-          </Text>
-        </Box>
-      )}
-      <Flex align={"center"} gap={"2"}>
-        {isToast && (
-          <Blockquote
-            style={{ paddingLeft: "3px" }}
-            className="justify-self-start"
-          >
-            <TimerIcon />
-          </Blockquote>
-        )}
-        <Box
-          className="inline-block mx-auto"
-          style={isToast ? { transform: "translate(-20%)" } : {}}
-        >
-          <Text as="p" weight={"regular"} size={`${isToast ? "5" : "2"}`}>
-            {hours !== undefined &&
-            minutes !== undefined &&
-            seconds !== undefined
-              ? `${formattedHours}:${formattedMinutes}:${formattedSeconds}`
-              : `${hoursCustom}:${minutesCustom}:${secondsCustom}`}
-          </Text>
-        </Box>
-      </Flex>
-    </>
   );
 };
