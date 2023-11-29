@@ -14,7 +14,9 @@ export async function POST(request: NextRequest) {
       status: 400,
     });
   }
-  const { userId, projectId } = body; // Replace with how you retrieve the user's ID
+  const { userId, projectId, title, description, timer } = body; // Replace with how you retrieve the user's ID
+
+  console.log(timer, "Timer");
   const projects = await prisma.project.findMany({
     where: {
       user: {
@@ -37,9 +39,10 @@ export async function POST(request: NextRequest) {
   }
   const newIssue = await prisma.issue.create({
     data: {
-      title: body.title,
-      description: body.description,
+      title: title,
+      description: description,
       projectId: projectId,
+      timer,
       users: {
         connect: { id: userId }, // Connect the issue with the user
       },

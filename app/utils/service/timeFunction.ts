@@ -26,7 +26,15 @@ export const convertTotalSecondToUnit = (totalSeconds: number) => {
     hours: formattedHours,
   };
 };
+export function convertIntoTotalSecond(duree: string) {
+  // Séparer les heures, minutes et secondes
+  const [heures, minutes, secondes] = duree.split(":").map(Number);
 
+  // Calculer le total de secondes
+  const totalSecondes = heures * 3600 + minutes * 60 + secondes;
+
+  return totalSecondes;
+}
 export const applyFormatting = (
   seconds: number,
   minutes: number,

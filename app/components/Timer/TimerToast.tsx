@@ -91,10 +91,10 @@ export const CustomTimerToast = ({
   return (
     <Card
       className={classNames({
-        "z-50  max-w-xs bg-white slide-down":
+        "z-50  max-w-xs bg-white hidden":
           currentTimer !== timer?.id || !showToast,
         "z-50  max-w-xs bg-white slide-top":
-          currentTimer === timer?.id || showToast,
+          currentTimer === timer?.id && showToast,
       })}
       variant="classic"
       style={{ backgroundColor: "white" }}

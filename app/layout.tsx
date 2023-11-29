@@ -10,6 +10,7 @@ import QueryClientProvider from "./QueryClientProvider";
 import { ProjectContextProvider } from "./hooks/useProjectContext";
 import { TimerContextProvider } from "./hooks/useTimerContext";
 import { TaskList } from "./components";
+import { IssueContextProvider } from "./hooks/useIssueContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -33,17 +34,19 @@ export default function RootLayout({
         <AuthProvider>
           <QueryClientProvider>
             <ProjectContextProvider>
-              <Theme accentColor="purple">
-                <TimerContextProvider>
-                  <NavBar />
-                  <main className="p-5">
-                    <Container>
-                      <TaskList />
-                      {children}
-                    </Container>
-                  </main>
-                </TimerContextProvider>
-              </Theme>
+              <IssueContextProvider>
+                <Theme accentColor="purple">
+                  <TimerContextProvider>
+                    <NavBar />
+                    <main className="p-5">
+                      <Container>
+                        <TaskList />
+                        {children}
+                      </Container>
+                    </main>
+                  </TimerContextProvider>
+                </Theme>
+              </IssueContextProvider>
             </ProjectContextProvider>
           </QueryClientProvider>
         </AuthProvider>
