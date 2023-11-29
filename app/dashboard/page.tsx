@@ -17,7 +17,7 @@ const ProjectsRecapPage = async () => {
   if (projectsAssociatedWithUser?.length === 0)
     return <CreateProject session={session} />;
 
-  const totalTimeArray = projectsAssociatedWithUser.map((project) => {
+  const totalTimeArray = projectsAssociatedWithUser?.map((project) => {
     const projectTime = project?.issueId?.reduce((projectAcc, issue) => {
       const time = issue?.timer || 0;
       return projectAcc + time;
@@ -29,7 +29,7 @@ const ProjectsRecapPage = async () => {
     };
   });
 
-  const avancementArray = projectsAssociatedWithUser.map((project) => {
+  const avancementArray = projectsAssociatedWithUser?.map((project) => {
     // Compter le nombre total d'issues et le nombre d'issues "CLOSED"
     let totalIssues = 0;
     let closedIssues = 0;
