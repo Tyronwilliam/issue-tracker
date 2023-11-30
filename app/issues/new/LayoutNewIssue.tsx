@@ -15,7 +15,6 @@ const LayoutNewIssue = ({
   const { issueTime, handleTimeChange } = useIssueContext();
   return (
     <>
-      <IssueForm />
       <Flex direction={"column"} gap={"3"} width={"min-content"}>
         <Box>
           <AssignSelectProject projects={projectsAssociatedWithUser} />
@@ -24,9 +23,11 @@ const LayoutNewIssue = ({
           <TimeEdit
             handleTimeChange={handleTimeChange}
             issueTime={issueTime}
+            isLayout={true}
           />
         </Box>
       </Flex>
+      <IssueForm />
     </>
   );
 };

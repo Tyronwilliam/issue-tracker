@@ -53,11 +53,6 @@ const FastCreationIssue = ({
         </Flex>
         <Flex gap="3" mt="4" justify="end">
           <Dialog.Close>
-            <Button variant="solid" color="red">
-              Retour
-            </Button>
-          </Dialog.Close>{" "}
-          <Dialog.Close>
             <Button variant="solid" color="violet">
               OK
             </Button>

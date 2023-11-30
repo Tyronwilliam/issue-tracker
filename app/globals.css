@@ -23,6 +23,21 @@ body {
     @apply text-zinc-500 hover:text-zinc-800 transition-colors;
   }
 }
+@layer utilities {
+  .input__time {
+    @apply border border-gray-300 border-solid hover:border-violet-500 transition-colors;
+  }
+  input[type="number"] {
+    color: var(--purple-a9);
+  }
+  .input__time:focus {
+    outline: 1px solid var(--purple-a9);
+  }
+  input[type="time"]::-webkit-calendar-picker-indicator {
+    background: none;
+    display: none;
+  }
+}
 
 .slide-top {
   -webkit-animation: slide-top 0.5s cubic-bezier(0.25, 0.46, 0.45, 0.94) both;

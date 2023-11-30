@@ -6,16 +6,21 @@ import { Time, options } from "@/app/utils/service/timeFunction";
 import { Issue } from "@prisma/client";
 import { PlayIcon } from "@radix-ui/react-icons";
 import { Flex, Table, Tooltip } from "@radix-ui/themes";
-import axios from "axios";
+import axios, { AxiosResponse } from "axios";
 import React, { useEffect } from "react";
 import AssignStatus from "../[id]/AssignStatus";
 import { IssueWithProject } from "./IssueTable";
+import useToggle from "@/app/hooks/useToggle";
+import TimeEdit from "../_components/TimeEdit";
+import { useIssueContext } from "@/app/hooks/useIssueContext";
 interface Props {
   issues?: IssueWithProject[];
 }
 const IssueCells = ({ issues }: Props) => {
   const { timers, setTimers, setShowToast, setCurrentTimer } =
     useTimerContext();
+  const { open, toggle, itemId } = useToggle();
+  const { issueTime, handleTimeChange, setIssueTime } = useIssueContext();
 
   useEffect(() => {
     if (issues) {
@@ -70,6 +75,12 @@ const IssueCells = ({ issues }: Props) => {
               timers={timers}
               setCurrentTimer={setCurrentTimer}
               setShowToast={setShowToast}
+              toggle={toggle}
+              open={open}
+              itemId={itemId}
+              issueTime={issueTime}
+              handleTimeChange={handleTimeChange}
+              setIssueTime={setIssueTime}
             />
           </Flex>
         </Table.Cell>
@@ -97,6 +108,16 @@ type IconeTimerProps = {
   timers: Issue[];
   setCurrentTimer: (arg: number) => void;
   setShowToast: (arg: boolean) => void;
+  toggle: (arg: number | null) => void;
+  open: boolean;
+  itemId: number | null;
+  issueTime: string | undefined | number;
+  handleTimeChange: (
+    e: React.ChangeEvent<HTMLInputElement>,
+    isLayout: boolean,
+    issueId?: number
+  ) => Promise<AxiosResponse | null>;
+  setIssueTime: (issueTime: string | undefined | number) => void;
 };
 export type IssueWithTime = Issue & Time;
 const IconeTimer = ({
@@ -106,20 +127,39 @@ const IconeTimer = ({
   timers,
   setCurrentTimer,
   setShowToast,
+  toggle,
+  open,
+  itemId,
+  issueTime,
+  handleTimeChange,
+  setIssueTime,
 }: IconeTimerProps) => {
   return timerExists ? (
     <>
       {timers.map((timer: any) => {
         return timer?.id === issue?.id ? (
           <React.Fragment key={timer?.id}>
-            <TimerContent
-              timer={timer}
-              hours={timer?.hours}
-              minutes={timer?.minutes}
-              seconds={timer?.seconds}
-              totalSeconds={timer?.timer}
-              isToast={false}
-            />
+            {open && itemId === timer?.id ? (
+              <TimeEdit
+                toggle={toggle}
+                isLayout={false}
+                handleTimeChange={handleTimeChange}
+                issueTime={issueTime}
+                setIssueTime={setIssueTime}
+                issueId={issue?.id}
+              />
+            ) : (
+              <TimerContent
+                timer={timer}
+                hours={timer?.hours}
+                minutes={timer?.minutes}
+                seconds={timer?.seconds}
+                totalSeconds={timer?.timer}
+                isToast={false}
+                toggle={toggle}
+              />
+            )}
+
             <ResumeTimer
               setCurrentTimer={setCurrentTimer}
               setShowToast={setShowToast}

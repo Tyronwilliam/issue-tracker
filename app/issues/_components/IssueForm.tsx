@@ -40,20 +40,23 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
       setIsSubmitting(true);
       if (issue) {
         if (issueTime) {
-          const convertIssueTime = convertIntoTotalSecond(issueTime as string);
-          console.log(convertIssueTime, "so what");
+          const convertIssueTime = await convertIntoTotalSecond(
+            issueTime as string
+          );
           data.timer = convertIssueTime;
         }
         await axios.patch(`/api/issues/${issue.id}`, data);
       } else {
         if (issueTime) {
-          const convertIssueTime = convertIntoTotalSecond(issueTime as string);
-          console.log(convertIssueTime, "so what");
+          const convertIssueTime = await convertIntoTotalSecond(
+            issueTime as string
+          );
           data.timer = convertIssueTime;
         }
         data.projectId = projectId || undefined;
         data.userId = session?.user?.id;
-        await axios.post("/api/issues", data);
+        const res = await axios.post("/api/issues", data);
+        console.log(res);
       }
       setIsSubmitting(false);
       router.push("/issues/list?projectId=" + projectId);

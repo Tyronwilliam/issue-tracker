@@ -26,7 +26,7 @@ export const convertTotalSecondToUnit = (totalSeconds: number) => {
     hours: formattedHours,
   };
 };
-export function convertIntoTotalSecond(duree: string) {
+export async function convertIntoTotalSecond(duree: string) {
   // Séparer les heures, minutes et secondes
   const [heures, minutes, secondes] = duree.split(":").map(Number);
 

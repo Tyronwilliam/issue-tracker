@@ -40,7 +40,7 @@ export async function POST(request: NextRequest) {
   const newIssue = await prisma.issue.create({
     data: {
       title: title,
-      description: description,
+      description: description ? description : "",
       projectId: projectId,
       timer,
       users: {

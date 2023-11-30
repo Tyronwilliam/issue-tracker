@@ -13,6 +13,7 @@ type PropsTimerContent = {
   seconds: number | undefined;
   isToast: boolean;
   totalSeconds?: number;
+  toggle: (arg: number) => void;
 };
 export const TimerContent = ({
   timer,
@@ -21,6 +22,7 @@ export const TimerContent = ({
   seconds,
   isToast,
   totalSeconds,
+  toggle,
 }: PropsTimerContent) => {
   // Now you can use stopwatchOffset as needed
   let secondsCustom;
@@ -61,6 +63,7 @@ export const TimerContent = ({
         <Box
           className="inline-block mx-auto"
           style={isToast ? { transform: "translate(-20%)" } : {}}
+          onClick={() => (!isToast ? toggle(timer?.id) : null)}
         >
           <Text as="p" weight={"regular"} size={`${isToast ? "5" : "2"}`}>
             {hours !== undefined &&
