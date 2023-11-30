@@ -56,7 +56,6 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
         data.projectId = projectId || undefined;
         data.userId = session?.user?.id;
         const res = await axios.post("/api/issues", data);
-        console.log(res);
       }
       setIsSubmitting(false);
       router.push("/issues/list?projectId=" + projectId);
