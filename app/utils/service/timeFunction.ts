@@ -17,6 +17,7 @@ export const convertTotalSecondToUnit = (totalSeconds: number) => {
   seconds = totalSeconds % 60;
   minutes = Math.floor((totalSeconds / 60) % 60);
   hours = Math.floor(totalSeconds / 3600);
+
   const { formattedSeconds, formattedMinutes, formattedHours } =
     applyFormatting(seconds, minutes, hours);
 
@@ -59,7 +60,7 @@ export const options: Intl.DateTimeFormatOptions = {
 export const updateTimeOnPause = async (
   totalSeconds: number,
   timer: Issue
-): Promise<AxiosResponse<Response>> => {
+) => {
   return await axios
     .patch("/api/issues/" + timer.id, {
       timer: totalSeconds,

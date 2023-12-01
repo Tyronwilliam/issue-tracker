@@ -3,6 +3,7 @@ import prisma from "@/prisma/client";
 import { issueSchema } from "../../validationSchema";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../auth/[...nextauth]/route";
+import { IssueWithProject, columnName } from "@/app/issues/list/IssueTable";
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({}, { status: 401 });
@@ -16,7 +17,6 @@ export async function POST(request: NextRequest) {
   }
   const { userId, projectId, title, description, timer } = body; // Replace with how you retrieve the user's ID
 
-  console.log(timer, "Timer");
   const projects = await prisma.project.findMany({
     where: {
       user: {
@@ -50,4 +50,16 @@ export async function POST(request: NextRequest) {
   });
 
   return NextResponse.json(newIssue, { status: 201 });
+}
+
+export async function GET(request: NextRequest) {
+  // const session = await getServerSession(authOptions);
+  // if (!session) return NextResponse.json({}, { status: 401 });
+
+  const issues = await prisma.issue.findMany({
+    include: {
+      Project: true,
+    },
+  });
+  return NextResponse.json(issues, { status: 200 });
 }

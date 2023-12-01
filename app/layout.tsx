@@ -38,12 +38,7 @@ export default function RootLayout({
                 <Theme accentColor="purple">
                   <TimerContextProvider>
                     <NavBar />
-                    <main className="p-5">
-                      <Container>
-                        <TaskList />
-                        {children}
-                      </Container>
-                    </main>
+                    <main className="p-5">{children}</main>
                   </TimerContextProvider>
                 </Theme>
               </IssueContextProvider>

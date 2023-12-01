@@ -1,7 +1,9 @@
+import { Issue } from "@prisma/client";
 import { Flex } from "@radix-ui/themes";
 import { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
-import toast, { Toaster } from "react-hot-toast";
+import toast from "react-hot-toast";
+import { IssueWithTime } from "../list/IssueCells";
 
 const TimeEdit = ({
   issueTime,
@@ -10,6 +12,7 @@ const TimeEdit = ({
   toggle,
   issueId,
   setIssueTime,
+  setCurrentTimer,
 }: {
   issueTime: string | undefined | number;
   handleTimeChange: (
@@ -21,9 +24,13 @@ const TimeEdit = ({
   isLayout: boolean;
   toggle?: (arg: number | null) => void;
   setIssueTime?: (issueTime: string | undefined | number) => void;
+  setCurrentTimer: (arg: Issue | null | IssueWithTime) => void;
 }) => {
   const router = useRouter();
-  const handleResponse = (isSuccess: boolean) => {
+  const handleResponse = async (
+    res: AxiosResponse | null,
+    isSuccess: boolean
+  ) => {
     if (isSuccess) {
       toast.success("C'est fait !");
     } else {
@@ -32,6 +39,7 @@ const TimeEdit = ({
     if (setIssueTime && toggle) {
       setIssueTime("");
       toggle(null);
+      setCurrentTimer(null);
       router.refresh();
     }
   };
@@ -41,7 +49,7 @@ const TimeEdit = ({
     } else {
       const res = await handleTimeChange(e, isLayout, issueId);
       const statusBoolean: boolean = res?.status === 200 ? true : false;
-      handleResponse(statusBoolean);
+      handleResponse(res, statusBoolean);
     }
   };
 
@@ -49,13 +57,12 @@ const TimeEdit = ({
     if (!isLayout && e.key === "Enter") {
       const res = await handleTimeChange(e as any, isLayout, issueId);
       const statusBoolean: boolean = res?.status === 200 ? true : false;
-      handleResponse(statusBoolean);
+      handleResponse(res, statusBoolean);
     }
   };
 
   return (
     <>
-      <Toaster />
       <Flex gap={"3"} align={"center"}>
         <input
           className="input__time"

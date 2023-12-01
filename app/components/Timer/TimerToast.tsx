@@ -1,75 +1,72 @@
 "use client";
-import { useTimerContext } from "@/app/hooks/useTimerContext";
-import { updateTimeOnPause } from "@/app/utils/service/timeFunction";
+import { IssueWithTime } from "@/app/issues/list/IssueCells";
+import {
+  convertTotalSecondToUnit,
+  updateTimeOnPause,
+} from "@/app/utils/service/timeFunction";
+import { Issue } from "@prisma/client";
 import { Card, Flex } from "@radix-ui/themes";
+import classNames from "classnames";
 import { useRouter } from "next/navigation";
 import { useEffect } from "react";
 import { useStopwatch } from "react-timer-hook";
 import TimerAction from "./TimerAction";
 import { TimerContent } from "./TimerContent";
-import { IssueWithTime } from "@/app/issues/list/IssueCells";
-import classNames from "classnames";
 
 export const CustomTimerToast = ({
-  timer,
   showToast,
   setShowToast,
-  timers,
-  setTimers,
+  currentTimer,
+  setCurrentTimer,
+  setTimerRunning,
 }: {
-  timers: IssueWithTime[];
-  timer: IssueWithTime;
   showToast: boolean;
-  setTimers: (arg: any) => void;
   setShowToast: (showToast: boolean) => void;
+  currentTimer: IssueWithTime;
+  setCurrentTimer: (arg: IssueWithTime | null | Issue) => void | IssueWithTime;
+  setTimerRunning: (isRunning: boolean) => void;
 }) => {
-  // Conversion totalseconds BDD en Date
   const router = useRouter();
-  const { currentTimer, setCurrentTimer } = useTimerContext();
 
   const stopwatchOffset = new Date();
-  stopwatchOffset.setSeconds(stopwatchOffset.getSeconds() + timer.timer);
+  stopwatchOffset.setSeconds(
+    stopwatchOffset.getSeconds() + currentTimer?.timer
+  );
+
   const { seconds, minutes, hours, pause, start, isRunning, totalSeconds } =
     useStopwatch({ offsetTimestamp: stopwatchOffset });
 
   const handleStart = async () => {
-    setCurrentTimer(timer?.id);
+    setTimerRunning(true);
     start();
   };
 
   const handlePause = async () => {
     pause();
-    const res = await updateTimeOnPause(totalSeconds, timer);
+    setTimerRunning(false);
+    const res = await updateTimeOnPause(totalSeconds, currentTimer);
     if (res?.status === 200) {
+      setShowToast(false);
       router.refresh();
     }
-
-    setShowToast(false);
   };
-  useEffect(() => {
-    if (currentTimer !== timer?.id) {
-      pause();
-    }
-  }, [timer?.id, currentTimer]);
 
   useEffect(() => {
-    // Recherchez le bon timer dans le tableau en fonction de son ID
-    const updatedTimers = timers.map((t) => {
-      if (t.id === timer.id) {
-        // Mettez à jour les valeurs du timer avec les nouvelles valeurs
-        return {
-          ...t,
-          seconds: seconds !== undefined ? seconds : t.seconds,
-          minutes: minutes !== undefined ? minutes : t.minutes,
-          hours: hours !== undefined ? hours : t.hours,
-        };
-      } else {
-        return t;
-      }
-    });
-    // Mettez à jour le tableau des timers avec les timers mis à jour
-    setTimers(updatedTimers);
-  }, [totalSeconds, seconds, minutes, hours, timer?.id]);
+    if (currentTimer) {
+      // Calculate the formatted time units
+      const { seconds, minutes, hours } = convertTotalSecondToUnit(
+        currentTimer?.timer || 0
+      );
+      const newCurrentTimer: any = {
+        ...(currentTimer as IssueWithTime),
+        seconds: seconds !== undefined ? seconds : currentTimer.seconds,
+        minutes: minutes !== undefined ? minutes : currentTimer.minutes,
+        hours: hours !== undefined ? hours : currentTimer.hours,
+      };
+      // Update the currentTimer object
+      setCurrentTimer(newCurrentTimer);
+    }
+  }, [totalSeconds, currentTimer?.id, currentTimer?.timer]);
 
   useEffect(() => {
     const handleBeforeUnload = (event: BeforeUnloadEvent) => {
@@ -91,22 +88,30 @@ export const CustomTimerToast = ({
   return (
     <Card
       className={classNames({
-        "z-50  max-w-xs bg-white hidden":
-          currentTimer !== timer?.id || !showToast,
-        "z-50  max-w-xs bg-white slide-top":
-          currentTimer === timer?.id && showToast,
+        "z-50  max-w-xs bg-white hidden": currentTimer === null || !showToast,
+        "z-50  max-w-xs bg-white slide-top": currentTimer !== null && showToast,
       })}
       variant="classic"
       style={{ backgroundColor: "white" }}
     >
       <Flex direction={"column"} gap={"2"}>
-        <TimerContent
-          timer={timer}
-          hours={hours}
-          minutes={minutes}
-          seconds={seconds}
-          isToast={true}
-        />
+        {isRunning ? (
+          <TimerContent
+            timer={currentTimer}
+            hours={hours}
+            minutes={minutes}
+            seconds={seconds}
+            totalSeconds={totalSeconds}
+            isToast={true}
+          />
+        ) : (
+          <TimerContent
+            timer={currentTimer as IssueWithTime}
+            totalSeconds={currentTimer?.timer}
+            isToast={true}
+          />
+        )}
+
         <TimerAction
           isRunning={isRunning}
           handlePause={handlePause}

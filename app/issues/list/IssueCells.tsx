@@ -1,50 +1,36 @@
 "use client";
 import { IssueStatusBadge, Link } from "@/app/components";
 import { TimerContent } from "@/app/components/Timer/TimerContent";
+import { useIssueContext } from "@/app/hooks/useIssueContext";
 import { useTimerContext } from "@/app/hooks/useTimerContext";
+import useToggle from "@/app/hooks/useToggle";
 import { Time, options } from "@/app/utils/service/timeFunction";
 import { Issue } from "@prisma/client";
 import { PlayIcon } from "@radix-ui/react-icons";
 import { Flex, Table, Tooltip } from "@radix-ui/themes";
-import axios, { AxiosResponse } from "axios";
-import React, { useEffect } from "react";
+import { AxiosResponse } from "axios";
+import React from "react";
 import AssignStatus from "../[id]/AssignStatus";
-import { IssueWithProject } from "./IssueTable";
-import useToggle from "@/app/hooks/useToggle";
 import TimeEdit from "../_components/TimeEdit";
-import { useIssueContext } from "@/app/hooks/useIssueContext";
+import { IssueWithProject } from "./IssueTable";
+import AlertCurrentTimer from "@/app/components/Timer/AlertCurrentTimer";
 interface Props {
   issues?: IssueWithProject[];
 }
 const IssueCells = ({ issues }: Props) => {
-  const { timers, setTimers, setShowToast, setCurrentTimer } =
-    useTimerContext();
+  const {
+    setShowToast,
+    setCurrentTimer,
+    currentTimer,
+    createTimer,
+    timerRunning,
+  } = useTimerContext();
   const { open, toggle, itemId } = useToggle();
   const { issueTime, handleTimeChange, setIssueTime } = useIssueContext();
 
-  useEffect(() => {
-    if (issues) {
-      const updatedTimers = issues
-        .filter((issue) => issue.timer > 0)
-        .map((issue) => issue);
-      setTimers(updatedTimers);
-    }
-  }, [issues]);
-
-  const createTimer = async (issue: Issue) => {
-    const res = await axios.get("/api/issues/" + issue.id);
-    const id = res.data.id;
-    const freshIssue = res.data;
-    const exist = timers.some((el) => el.id === id);
-    if (exist) return;
-    setCurrentTimer(id);
-    setTimers((prevTimers) => [...prevTimers, freshIssue]);
-    setShowToast(true);
-  };
   return issues?.map((issue) => {
     const date = new Date(issue?.createdAt);
     const formatDate = date.toLocaleDateString(undefined, options);
-    const timerExists = timers?.some((timer) => timer.id === issue?.id);
 
     return (
       <Table.Row key={issue?.id}>
@@ -69,10 +55,8 @@ const IssueCells = ({ issues }: Props) => {
         <Table.Cell className="hidden md:table-cell mx-auto">
           <Flex gap={"2"} align={"center"} width={"100%"} height={"100%"}>
             <IconeTimer
-              timerExists={timerExists}
               createTimer={createTimer}
               issue={issue}
-              timers={timers}
               setCurrentTimer={setCurrentTimer}
               setShowToast={setShowToast}
               toggle={toggle}
@@ -81,6 +65,8 @@ const IssueCells = ({ issues }: Props) => {
               issueTime={issueTime}
               handleTimeChange={handleTimeChange}
               setIssueTime={setIssueTime}
+              timerRunning={timerRunning}
+              currentTimer={currentTimer}
             />
           </Flex>
         </Table.Cell>
@@ -102,11 +88,11 @@ const IssueCells = ({ issues }: Props) => {
 export default IssueCells;
 
 type IconeTimerProps = {
-  timerExists: boolean;
   createTimer: (issue: Issue) => void;
-  issue: IssueWithProject;
-  timers: Issue[];
-  setCurrentTimer: (arg: number) => void;
+  issue: IssueWithProject | IssueWithTime;
+  timerRunning: boolean;
+  currentTimer: Issue | null | IssueWithTime;
+  setCurrentTimer: (arg: Issue | null | IssueWithTime) => void;
   setShowToast: (arg: boolean) => void;
   toggle: (arg: number | null) => void;
   open: boolean;
@@ -121,10 +107,8 @@ type IconeTimerProps = {
 };
 export type IssueWithTime = Issue & Time;
 const IconeTimer = ({
-  timerExists,
   createTimer,
   issue,
-  timers,
   setCurrentTimer,
   setShowToast,
   toggle,
@@ -133,44 +117,49 @@ const IconeTimer = ({
   issueTime,
   handleTimeChange,
   setIssueTime,
+  currentTimer,
+  timerRunning,
 }: IconeTimerProps) => {
-  return timerExists ? (
-    <>
-      {timers.map((timer: any) => {
-        return timer?.id === issue?.id ? (
-          <React.Fragment key={timer?.id}>
-            {open && itemId === timer?.id ? (
-              <TimeEdit
-                toggle={toggle}
-                isLayout={false}
-                handleTimeChange={handleTimeChange}
-                issueTime={issueTime}
-                setIssueTime={setIssueTime}
-                issueId={issue?.id}
-              />
-            ) : (
-              <TimerContent
-                timer={timer}
-                hours={timer?.hours}
-                minutes={timer?.minutes}
-                seconds={timer?.seconds}
-                totalSeconds={timer?.timer}
-                isToast={false}
-                toggle={toggle}
-              />
-            )}
+  return issue?.timer > 0 ? (
+    <React.Fragment key={issue?.id}>
+      {open && itemId === issue?.id ? (
+        <TimeEdit
+          toggle={toggle}
+          isLayout={false}
+          handleTimeChange={handleTimeChange}
+          issueTime={issueTime}
+          setIssueTime={setIssueTime}
+          setCurrentTimer={setCurrentTimer}
+          issueId={issue?.id}
+        />
+      ) : (
+        <TimerContent
+          timer={issue}
+          // hours={issue?.hours}
+          // minutes={issue?.minutes}
+          // seconds={issue?.seconds}
+          totalSeconds={issue?.timer}
+          isToast={false}
+          toggle={toggle}
+          setCurrentTimer={setCurrentTimer}
+        />
+      )}
 
-            <ResumeTimer
-              setCurrentTimer={setCurrentTimer}
-              setShowToast={setShowToast}
-              issue={issue}
-            />
-          </React.Fragment>
-        ) : null;
-      })}
-    </>
+      <ResumeTimer
+        setCurrentTimer={setCurrentTimer}
+        setShowToast={setShowToast}
+        issue={issue}
+        timerRunning={timerRunning}
+        currentTimer={currentTimer}
+      />
+    </React.Fragment>
   ) : (
-    <ResumeTimer createTimer={createTimer} issue={issue} />
+    <ResumeTimer
+      createTimer={createTimer}
+      issue={issue}
+      timerRunning={timerRunning}
+      currentTimer={currentTimer}
+    />
   );
 };
 
@@ -179,12 +168,17 @@ const ResumeTimer = ({
   issue,
   setCurrentTimer,
   setShowToast,
+  timerRunning,
+  currentTimer,
 }: {
   createTimer?: (arg: Issue) => void;
   issue: Issue;
-  setCurrentTimer?: (arg: number) => void;
+  setCurrentTimer?: (arg: Issue | null | IssueWithTime) => void;
   setShowToast?: (arg: boolean) => void;
+  timerRunning: boolean;
+  currentTimer: Issue | null | IssueWithTime;
 }) => {
+  const { setShowAlert } = useTimerContext();
   return (
     <Tooltip content="Start" style={{ backgroundColor: "var(--accent-9)" }}>
       <PlayIcon
@@ -192,11 +186,21 @@ const ResumeTimer = ({
         className="cursor-pointer"
         onClick={() => {
           if (createTimer) {
-            createTimer(issue);
+            if (currentTimer !== null && timerRunning === true) {
+              setShowAlert(true);
+              return;
+            } else {
+              createTimer(issue);
+            }
           }
           if (setCurrentTimer && setShowToast) {
-            setCurrentTimer(issue?.id);
-            setShowToast(true);
+            if (currentTimer !== null && timerRunning === true) {
+              setShowAlert(true);
+              return;
+            } else {
+              setCurrentTimer(issue);
+              setShowToast(true);
+            }
           }
         }}
       />

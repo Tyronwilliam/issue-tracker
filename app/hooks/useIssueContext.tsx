@@ -54,7 +54,6 @@ export function IssueContextProvider({
     isLayout: boolean,
     issueId?: number
   ): Promise<AxiosResponse | null> => {
-    console.log(event.currentTarget.value.length);
     const time = event.currentTarget.value;
     setIssueTime(time);
     // Step for saved in issue Ceil on change

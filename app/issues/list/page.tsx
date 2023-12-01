@@ -15,12 +15,14 @@ import IssueTable, {
   IssueWithProject,
   columnName,
 } from "./IssueTable";
+
 const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
   const session = await getServerSession(authOptions);
 
   const projectsAssociatedWithUser = await getProjectsAssociatedWithUser(
     session
   );
+
   const projectId = parseInt(searchParams.projectId);
   const projectIndex = projectsAssociatedWithUser.findIndex(
     (project) => project.id === projectId
@@ -90,7 +92,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
       {allIssueFromUser.length === 0 ? (
         <CreateIssueUI />
       ) : (
-        <Flex direction="column" gap="5">
+        <Flex direction="column" gap="5" className="relative">
           <Flex
             justify="between"
             direction={{ initial: "column", sm: "row" }}
