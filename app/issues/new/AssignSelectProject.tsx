@@ -2,13 +2,27 @@
 import { useProjectContext } from "@/app/hooks/useProjectContext";
 import { Project } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
+import axios from "axios";
 import React from "react";
 import { Toaster } from "react-hot-toast";
 
-const AssignSelectProject = ({ projects }: { projects: Project[] }) => {
+const AssignSelectProject = ({
+  projects,
+  issueId,
+}: {
+  projects: Project[];
+  issueId?: number;
+}) => {
+  if (projects?.length === 0) return;
   const { projectId, setProjectId } = useProjectContext();
 
-  const onChangeProject = (project: string) => {
+  const onChangeProject = async (project: string) => {
+    if (issueId) {
+      const res = await axios.patch("/api/issues/" + issueId, {
+        projectId: parseInt(project),
+      });
+      console.log(res, "ASSIGN PROJEC TEST");
+    }
     setProjectId(parseInt(project));
   };
   return (

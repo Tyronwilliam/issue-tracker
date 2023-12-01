@@ -18,7 +18,8 @@ export async function PATCH(
       status: 400,
     });
   }
-  const { userId, description, title, isConnect, status, timer } = body;
+  const { userId, description, title, isConnect, status, timer, projectId } =
+    body;
   if (userId) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -49,6 +50,7 @@ export async function PATCH(
           title,
           description,
           status,
+          projectId,
           timer: timer && parseInt(timer),
         }
       : {
@@ -56,6 +58,7 @@ export async function PATCH(
           description,
           users,
           status,
+          projectId,
           timer: timer && parseInt(timer),
         };
 

@@ -3,10 +3,14 @@ import { Project } from "@prisma/client";
 import React from "react";
 import AssignSelectProject from "./AssignSelectProject";
 import { Box, Flex } from "@radix-ui/themes";
-import IssueForm from "../_components/IssueForm";
 import TimeEdit from "../_components/TimeEdit";
 import { useIssueContext } from "@/app/hooks/useIssueContext";
-
+import IssueFormSkeleton from "./loading";
+import dynamic from "next/dynamic";
+const IssueForm = dynamic(() => import("../_components/IssueForm"), {
+  ssr: false,
+  loading: () => <IssueFormSkeleton />,
+});
 const LayoutNewIssue = ({
   projectsAssociatedWithUser,
 }: {
@@ -15,6 +19,7 @@ const LayoutNewIssue = ({
   const { issueTime, handleTimeChange, setIssueTime } = useIssueContext();
   return (
     <>
+      <IssueForm />
       <Flex direction={"column"} gap={"3"} width={"min-content"}>
         <Box>
           <AssignSelectProject projects={projectsAssociatedWithUser} />
@@ -28,7 +33,6 @@ const LayoutNewIssue = ({
           />
         </Box>
       </Flex>
-      <IssueForm />
     </>
   );
 };

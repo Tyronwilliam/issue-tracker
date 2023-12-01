@@ -9,11 +9,12 @@ import { useRouter } from "next/navigation";
 import toast, { Toaster } from "react-hot-toast";
 
 export type IssueWithUsers = Omit<Issue, "User" | "Project"> & {
-  users?: User[];
+  users: User[];
   Project?: Project;
 };
 
 const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
+  if (!issue?.Project?.id) return;
   const { data: users, error, isLoading } = useUser(issue?.Project?.id);
   const { data: session } = useSession();
 
@@ -66,7 +67,7 @@ const AssignSelect = ({ issue }: { issue: IssueWithUsers }) => {
                   <Select.Item
                     value={user.id}
                     key={user.id}
-                    disabled={user.id !== session?.user?.id }
+                    disabled={user.id !== session?.user?.id}
                   >
                     {user.name}
                   </Select.Item>

@@ -17,10 +17,10 @@ enum Status {
 }
 
 model CategorieCustom {
-  id    Int     @id @default(autoincrement())
-  label String
-  value String  @unique
-  Issue Issue[]
+  id      Int     @id @default(autoincrement())
+  title   String
+  hexCode String  @unique
+  issue   Issue[]
 }
 
 model Project {
@@ -34,18 +34,17 @@ model Project {
 }
 
 model Issue {
-  id                Int             @id @default(autoincrement())
-  title             String          @db.VarChar(255) //varchar (191)
-  description       String          @db.Text
-  status            Status          @default(OPEN)
-  createdAt         DateTime        @default(now())
-  updatedAt         DateTime        @updatedAt
-  Project           Project?        @relation(fields: [projectId], references: [id])
-  projectId         Int?
-  users             User[]
-  timer             Int             @default(0)
-  categorie         CategorieCustom @relation(fields: [categorieCustomId], references: [id])
-  categorieCustomId Int
+  id          Int               @id @default(autoincrement())
+  title       String            @db.VarChar(255) //varchar (191)
+  description String            @db.Text
+  status      Status            @default(OPEN)
+  createdAt   DateTime          @default(now())
+  updatedAt   DateTime          @updatedAt
+  Project     Project?          @relation(fields: [projectId], references: [id])
+  projectId   Int?
+  users       User[]
+  timer       Int               @default(0)
+  categorie   CategorieCustom[]
 }
 
 model User {

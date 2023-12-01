@@ -1,9 +1,10 @@
 import { Issue } from "@prisma/client";
-import { Flex } from "@radix-ui/themes";
+import { Box, Flex } from "@radix-ui/themes";
 import { AxiosResponse } from "axios";
 import { useRouter } from "next/navigation";
 import toast from "react-hot-toast";
 import { IssueWithTime } from "../list/IssueCells";
+import classNames from "classnames";
 
 const TimeEdit = ({
   issueTime,
@@ -63,20 +64,27 @@ const TimeEdit = ({
 
   return (
     <>
-      <Flex gap={"3"} align={"center"}>
-        <input
-          className="input__time"
-          type="time"
-          step="1"
-          value={issueTime}
-          name="time"
-          onChange={(e) => {
-            const time = e.currentTarget.value;
-            if (setIssueTime) setIssueTime(time);
-          }}
-          onKeyDown={handlePressKey}
-          onBlur={handleSubmit}
-        />
+      <Flex gap={`${isLayout ? "3" : "0"}`} align={"center"}>
+        <Box
+          className={classNames({
+            "": isLayout,
+            "max-w-[53px]": !isLayout,
+          })}
+        >
+          <input
+            className="input__time w-full"
+            type="time"
+            step="1"
+            value={issueTime}
+            name="time"
+            onChange={(e) => {
+              const time = e.currentTarget.value;
+              if (setIssueTime) setIssueTime(time);
+            }}
+            onKeyDown={handlePressKey}
+            onBlur={handleSubmit}
+          />
+        </Box>
         {isLayout ? (
           <label
             htmlFor="time"

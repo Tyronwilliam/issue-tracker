@@ -12,6 +12,7 @@ export const patchIssueSchema = z.object({
   description: z.string().max(65535).optional(),
   userId: z.string().min(1, "Un id est requis").max(255).optional().nullable(),
   timer: z.number().optional(),
+  projectId: z.number().optional(),
 });
 
 export const projectSchema = z.object({

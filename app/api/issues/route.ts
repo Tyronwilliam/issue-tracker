@@ -26,22 +26,25 @@ export async function POST(request: NextRequest) {
       },
     },
   });
-
   const isProjectAssignToUser = projects.some((el) => el.id === projectId);
 
-  if (!isProjectAssignToUser) {
-    return NextResponse.json(
-      { error: "Invalid project id" },
-      {
-        status: 400,
-      }
-    );
+  let data;
+
+  if (typeof projectId === "number") {
+    if (!isProjectAssignToUser) {
+      return NextResponse.json(
+        { error: "Invalid project id" },
+        {
+          status: 400,
+        }
+      );
+    }
   }
   const newIssue = await prisma.issue.create({
     data: {
-      title: title,
-      description: description ? description : "",
-      projectId: projectId,
+      title,
+      description,
+      projectId,
       timer,
       users: {
         connect: { id: userId }, // Connect the issue with the user
