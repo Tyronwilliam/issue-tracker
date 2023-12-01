@@ -12,7 +12,7 @@ const LayoutNewIssue = ({
 }: {
   projectsAssociatedWithUser: Project[];
 }) => {
-  const { issueTime, handleTimeChange } = useIssueContext();
+  const { issueTime, handleTimeChange, setIssueTime } = useIssueContext();
   return (
     <>
       <Flex direction={"column"} gap={"3"} width={"min-content"}>
@@ -23,6 +23,7 @@ const LayoutNewIssue = ({
           <TimeEdit
             handleTimeChange={handleTimeChange}
             issueTime={issueTime}
+            setIssueTime={setIssueTime}
             isLayout={true}
           />
         </Box>

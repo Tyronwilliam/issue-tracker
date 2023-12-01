@@ -24,7 +24,7 @@ const TimeEdit = ({
   isLayout: boolean;
   toggle?: (arg: number | null) => void;
   setIssueTime?: (issueTime: string | undefined | number) => void;
-  setCurrentTimer: (arg: Issue | null | IssueWithTime) => void;
+  setCurrentTimer?: (arg: Issue | null | IssueWithTime) => void;
 }) => {
   const router = useRouter();
   const handleResponse = async (
@@ -36,7 +36,7 @@ const TimeEdit = ({
     } else {
       toast.error("Oups, sauvegarde impossible");
     }
-    if (setIssueTime && toggle) {
+    if (setIssueTime && toggle && setCurrentTimer) {
       setIssueTime("");
       toggle(null);
       setCurrentTimer(null);
