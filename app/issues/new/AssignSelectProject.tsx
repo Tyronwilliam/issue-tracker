@@ -4,7 +4,7 @@ import { Project } from "@prisma/client";
 import { Select } from "@radix-ui/themes";
 import axios from "axios";
 import React from "react";
-import { Toaster } from "react-hot-toast";
+import toast, { Toaster } from "react-hot-toast";
 
 const AssignSelectProject = ({
   projects,
@@ -21,7 +21,11 @@ const AssignSelectProject = ({
       const res = await axios.patch("/api/issues/" + issueId, {
         projectId: parseInt(project),
       });
-      console.log(res, "ASSIGN PROJEC TEST");
+      if (res.status === 200) {
+        toast.success("C'est fait");
+      } else {
+        toast.error("Oups ! Modification impossible");
+      }
     }
     setProjectId(parseInt(project));
   };

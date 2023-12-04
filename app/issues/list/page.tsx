@@ -86,7 +86,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
       users,
     },
   });
-
+  const allCategorie = await prisma.categorieCustom.findMany();
   return (
     <>
       {allIssueFromUser.length === 0 ? (
@@ -113,6 +113,7 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
             searchParams={searchParams}
             issues={issues}
             projectsAssociatedWithUser={projectsAssociatedWithUser}
+            allCategorie={allCategorie}
           />
           <Pagination
             itemCount={issueCount}

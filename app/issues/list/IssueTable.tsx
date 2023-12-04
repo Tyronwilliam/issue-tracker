@@ -1,4 +1,4 @@
-import { Issue, Project, Status } from "@prisma/client";
+import { CategorieCustom, Issue, Project, Status } from "@prisma/client";
 import { CaretSortIcon } from "@radix-ui/react-icons";
 import { Box, Flex, Table } from "@radix-ui/themes";
 import NextLink from "next/link";
@@ -18,12 +18,14 @@ interface Props {
   searchParams: IssueQuery;
   issues?: IssueWithProject[];
   projectsAssociatedWithUser: Project[];
+  allCategorie: CategorieCustom[];
 }
 
 const IssueTable = ({
   searchParams,
   issues,
   projectsAssociatedWithUser,
+  allCategorie,
 }: Props) => {
   return (
     <Flex
@@ -59,7 +61,7 @@ const IssueTable = ({
             </Table.Row>
           </Table.Header>
           <Table.Body>
-            <IssueCells issues={issues} />
+            <IssueCells issues={issues} allCategorie={allCategorie} />
           </Table.Body>
         </Table.Root>
       </Box>
