@@ -1,4 +1,5 @@
 import { Spinner } from "@/app/components";
+import prisma from "@/prisma/client";
 import { CategorieCustom } from "@prisma/client";
 import { InfoCircledIcon } from "@radix-ui/react-icons";
 import {
@@ -46,40 +47,49 @@ const CustomCategorie = ({
     const newColor = color.hex;
     setColor(newColor);
   };
+  const handleCreateCategorie = async () => {
+    let data = {
+      title: title.current?.value,
+      hexCode: color,
+    };
 
+    const response = await axios
+      .post("/api/categorie/" + issueId, data)
+      .then((res) => res)
+      .catch((err) => err);
+    console.log(response, "Response from POST ");
+    if (response?.status === 200) {
+      setIsSubmitting(false);
+      setOpen(false);
+      toast.success("C'est fait ! ");
+      router.refresh();
+    } else {
+      let errors = { title: "", hexCode: "" };
+      const titleError = response?.response?.data?.title;
+      const hexCodeError = response?.response?.data?.hexCode;
+      if (titleError) {
+        errors.title = response?.response?.data?.title?._errors[0];
+      }
+      if (hexCodeError) {
+        errors.hexCode = response?.response?.data?.hexCode?._errors[0];
+      }
+      setIsSubmitting(false);
+      setError(errors);
+      toast.error("Oups ! Modification impossible");
+    }
+  };
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     setIsSubmitting(true);
-    if (!isSelect) {
-      let data = {
-        title: title.current?.value,
-        hexCode: color,
-      };
+    handleCreateCategorie();
+  };
 
-      const response = await axios
-        .post("/api/categorie/" + issueId, data)
-        .then((res) => res)
-        .catch((err) => err);
-      console.log(response, "Response from POST ");
-      if (response?.status === 200) {
-        setIsSubmitting(false);
-        setOpen(false);
-        toast.success("C'est fait ! ");
-        router.refresh();
-      } else {
-        let errors = { title: "", hexCode: "" };
-        const titleError = response?.response?.data?.title;
-        const hexCodeError = response?.response?.data?.hexCode;
-        if (titleError) {
-          errors.title = response?.response?.data?.title?._errors[0];
-        }
-        if (hexCodeError) {
-          errors.hexCode = response?.response?.data?.hexCode?._errors[0];
-        }
-        setIsSubmitting(false);
-        setError(errors);
-        toast.error("Oups ! Modification impossible");
-      }
+  const handleSelect = async (id: string) => {
+    const res = await axios.get("/api/categorie/" + id);
+    console.log(res);
+
+    if(res?.status === 200){
+        
     }
   };
   return (
@@ -99,7 +109,12 @@ const CustomCategorie = ({
 
         <Flex gap="3" mt="4" direction={"column"}>
           <Flex gap="3" mt="4" align={"center"}>
-            {isSelect && <SelectComponent allCategorie={allCategorie} />}
+            {isSelect && (
+              <SelectComponent
+                allCategorie={allCategorie}
+                handleSelect={handleSelect}
+              />
+            )}
             <Text as="span">Ou</Text>
             <Button onClick={() => setIsSelect(false)}>
               Créer une catégorie
@@ -153,16 +168,18 @@ const MyColorPickerComponent = ({
 
 const SelectComponent = ({
   allCategorie,
+  handleSelect,
 }: {
   allCategorie: CategorieCustom[];
+  handleSelect: (id: string) => void;
 }) => {
   return (
-    <Select.Root>
+    <Select.Root onValueChange={(id) => handleSelect(id)}>
       <Select.Trigger placeholder="Catégorie" className="max-w-[101px]" />
       <Select.Content>
         {allCategorie?.map((cat: CategorieCustom) => {
           return (
-            <Select.Item value={cat.title} color={cat.hexCode} key={cat.id}>
+            <Select.Item value={cat.id.toString()} key={cat.id}>
               {cat.title}
             </Select.Item>
           );

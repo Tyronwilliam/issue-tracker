@@ -27,7 +27,7 @@ export async function PATCH(
 
     if (!user)
       return NextResponse.json(
-        { error: "Invalid user." },
+        { error: "Invalide user." },
         {
           status: 400,
         }

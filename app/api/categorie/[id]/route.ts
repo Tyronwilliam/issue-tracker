@@ -10,7 +10,7 @@ export async function POST(
 ) {
   const session = await getServerSession(authOptions);
   if (!session) return NextResponse.json({}, { status: 401 });
-  
+
   const body = await request.json();
   const validationCategorie = patchCategorieSchema.safeParse(body);
 
@@ -31,4 +31,26 @@ export async function POST(
     },
   });
   return NextResponse.json(categorie, { status: 200 });
+}
+export async function GET(
+  request: NextRequest,
+  { params }: { params: { id: string } }
+) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({}, { status: 401 });
+  const exist = await prisma.categorieCustom.findUnique({
+    where: {
+      id: parseInt(params?.id),
+    },
+  });
+
+  if (!exist) {
+    return NextResponse.json(
+      { error: "Invalide id" },
+      {
+        status: 404,
+      }
+    );
+  }
+  return NextResponse.json(exist, { status: 200 });
 }
