@@ -45,7 +45,7 @@ const IssueCells = ({ issues, allCategorie }: Props) => {
               <IssueStatusBadge status={issue?.status} />
             </div>
             {/* couleur de background custom */}
-            <CustomCategorie allCategorie={allCategorie} />
+            <CustomCategorie allCategorie={allCategorie} issueId={issue?.id} />
           </Flex>
         </Table.RowHeaderCell>
         <Table.Cell className="hidden md:table-cell">
