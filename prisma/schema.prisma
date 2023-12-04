@@ -19,7 +19,7 @@ enum Status {
 model CategorieCustom {
   id      Int     @id @default(autoincrement())
   title   String
-  hexCode String  @unique
+  hexCode String
   issue   Issue[]
 }
 

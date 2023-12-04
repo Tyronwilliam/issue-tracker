@@ -42,6 +42,8 @@ const CustomCategorie = ({
   const [isSubmitting, setIsSubmitting] = useState(false);
   const handleChangeComplete = (color: ColorResult) => {
     const newColor = color.hex;
+    console.log(newColor?.length, "COLOR");
+    console.log(newColor, "COLOR");
     setColor(newColor);
   };
 
