@@ -88,8 +88,15 @@ const CustomCategorie = ({
     const res = await axios.get("/api/categorie/" + id);
     console.log(res);
 
-    if(res?.status === 200){
-        
+    if (res?.status === 200) {
+      const id = res?.data?.id;
+      const response = await axios
+        .put("/api/categorie/" + id + "/issue/" + issueId)
+        .then((res) => res)
+        .catch((err) => err);
+      console.log(response, "PATCH ISSUES");
+    } else {
+      toast.error("Oups ! Modification impossible");
     }
   };
   return (

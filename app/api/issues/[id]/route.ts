@@ -18,8 +18,16 @@ export async function PATCH(
       status: 400,
     });
   }
-  const { userId, description, title, isConnect, status, timer, projectId } =
-    body;
+  const {
+    userId,
+    description,
+    title,
+    isConnect,
+    status,
+    timer,
+    projectId,
+    categorieId,
+  } = body;
   if (userId) {
     const user = await prisma.user.findUnique({
       where: { id: userId },
@@ -41,6 +49,8 @@ export async function PATCH(
     ? { connect: { id: userId } }
     : { disconnect: { id: userId } };
 
+  const categorie = { connect: { id: parseInt(categorieId) } };
+
   if (!issue)
     return NextResponse.json({ error: "Invalid id" }, { status: 404 });
 
@@ -52,6 +62,7 @@ export async function PATCH(
           status,
           projectId,
           timer: timer && parseInt(timer),
+          categorie,
         }
       : {
           title,
@@ -60,6 +71,7 @@ export async function PATCH(
           status,
           projectId,
           timer: timer && parseInt(timer),
+          categorie,
         };
 
   const updateIssue = await prisma.issue.update({
