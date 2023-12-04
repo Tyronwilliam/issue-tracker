@@ -13,7 +13,7 @@ import {
 } from "@radix-ui/themes";
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import { useRef, useState } from "react";
+import { Ref, useRef, useState } from "react";
 import { CirclePicker, Color, ColorResult } from "react-color";
 import toast from "react-hot-toast";
 
@@ -40,44 +40,46 @@ const CustomCategorie = ({
   });
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
+  const [isSelect, setIsSelect] = useState(true);
+
   const handleChangeComplete = (color: ColorResult) => {
     const newColor = color.hex;
-    console.log(newColor?.length, "COLOR");
-    console.log(newColor, "COLOR");
     setColor(newColor);
   };
 
   const handleSubmit = async (event: any) => {
     event.preventDefault();
     setIsSubmitting(true);
-    let data = {
-      title: title.current?.value,
-      hexCode: color,
-    };
+    if (!isSelect) {
+      let data = {
+        title: title.current?.value,
+        hexCode: color,
+      };
 
-    const response = await axios
-      .post("/api/categorie/" + issueId, data)
-      .then((res) => res)
-      .catch((err) => err);
-    console.log(response, "Response from POST ");
-    if (response?.status === 200) {
-      setIsSubmitting(false);
-      setOpen(false);
-      toast.success("C'est fait ! ");
-      router.refresh();
-    } else {
-      let errors = { title: "", hexCode: "" };
-      const titleError = response?.response?.data?.title;
-      const hexCodeError = response?.response?.data?.hexCode;
-      if (titleError) {
-        errors.title = response?.response?.data?.title?._errors[0];
+      const response = await axios
+        .post("/api/categorie/" + issueId, data)
+        .then((res) => res)
+        .catch((err) => err);
+      console.log(response, "Response from POST ");
+      if (response?.status === 200) {
+        setIsSubmitting(false);
+        setOpen(false);
+        toast.success("C'est fait ! ");
+        router.refresh();
+      } else {
+        let errors = { title: "", hexCode: "" };
+        const titleError = response?.response?.data?.title;
+        const hexCodeError = response?.response?.data?.hexCode;
+        if (titleError) {
+          errors.title = response?.response?.data?.title?._errors[0];
+        }
+        if (hexCodeError) {
+          errors.hexCode = response?.response?.data?.hexCode?._errors[0];
+        }
+        setIsSubmitting(false);
+        setError(errors);
+        toast.error("Oups ! Modification impossible");
       }
-      if (hexCodeError) {
-        errors.hexCode = response?.response?.data?.hexCode?._errors[0];
-      }
-      setIsSubmitting(false);
-      setError(errors);
-      toast.error("Oups ! Modification impossible");
     }
   };
   return (
@@ -93,66 +95,24 @@ const CustomCategorie = ({
         <Dialog.Description size="2" mb="4">
           Crée ou asssigner une categorie à votre tache
         </Dialog.Description>
-        {/*  */}
+        <ErrorComponent title={error?.title} hexCode={error?.hexCode} />
+
         <Flex gap="3" mt="4" direction={"column"}>
-          <Select.Root>
-            <Select.Trigger placeholder="Catégorie" className="max-w-[101px]" />
-            <Select.Content>
-              {allCategorie?.map((cat: CategorieCustom) => {
-                return (
-                  <Select.Item
-                    value={cat.title}
-                    color={cat.hexCode}
-                    key={cat.id}
-                  >
-                    {cat.title}
-                  </Select.Item>
-                );
-              })}
-            </Select.Content>
-          </Select.Root>
-          <Text as="span">OU</Text>
-          {(error.title || error.hexCode) && (
-            <Callout.Root>
-              <Callout.Icon>
-                <InfoCircledIcon />
-              </Callout.Icon>
-              <Callout.Text>{error.title || error.hexCode}</Callout.Text>
-            </Callout.Root>
-          )}
-          {error?.hexCode && (
-            <Callout.Root>
-              <Callout.Icon>
-                <InfoCircledIcon />
-              </Callout.Icon>
-              <Callout.Text>{error?.hexCode}</Callout.Text>
-            </Callout.Root>
-          )}
+          <Flex gap="3" mt="4" align={"center"}>
+            {isSelect && <SelectComponent allCategorie={allCategorie} />}
+            <Text as="span">Ou</Text>
+            <Button onClick={() => setIsSelect(false)}>
+              Créer une catégorie
+            </Button>
+          </Flex>
           <form onSubmit={handleSubmit}>
-            <Flex gap="3" direction={"column"} className="w-fit">
-              <TextField.Root className="pr-2">
-                <TextField.Input
-                  id="categoryName"
-                  name="categoryName"
-                  placeholder="Créez votre catégorie personnalisée"
-                  aria-label="Nom de catégorie"
-                  aria-required="true"
-                  ref={title}
-                />
-              </TextField.Root>
-              <Box>
-                <label htmlFor="color">
-                  <Text as="span" size={"2"} mb={"2"} className="inline-block">
-                    Choissiez une couleur:
-                  </Text>
-                </label>
-                <MyColorPickerComponent
-                  color={color}
-                  onChangeComplete={handleChangeComplete}
-                />
-              </Box>
-            </Flex>
-            {/*  */}
+            {!isSelect && (
+              <FormComponent
+                onChangeComplete={handleChangeComplete}
+                title={title}
+                color={color}
+              />
+            )}
             <Flex gap="3" mt="4" justify="end">
               <Dialog.Close>
                 <Button variant="soft" color="gray">
@@ -189,4 +149,82 @@ const MyColorPickerComponent = ({
   onChangeComplete,
 }: MyColorPickerComponentProps) => {
   return <CirclePicker color={color} onChangeComplete={onChangeComplete} />;
+};
+
+const SelectComponent = ({
+  allCategorie,
+}: {
+  allCategorie: CategorieCustom[];
+}) => {
+  return (
+    <Select.Root>
+      <Select.Trigger placeholder="Catégorie" className="max-w-[101px]" />
+      <Select.Content>
+        {allCategorie?.map((cat: CategorieCustom) => {
+          return (
+            <Select.Item value={cat.title} color={cat.hexCode} key={cat.id}>
+              {cat.title}
+            </Select.Item>
+          );
+        })}
+      </Select.Content>
+    </Select.Root>
+  );
+};
+
+const FormComponent = ({
+  title,
+  color,
+  onChangeComplete,
+}: MyColorPickerComponentProps & {
+  title: Ref<HTMLInputElement> | undefined;
+}) => {
+  return (
+    <Flex gap="3" direction={"column"} className="w-fit">
+      <TextField.Root className="pr-2">
+        <TextField.Input
+          id="categoryName"
+          name="categoryName"
+          placeholder="Créez votre catégorie personnalisée"
+          aria-label="Nom de catégorie"
+          aria-required="true"
+          ref={title}
+        />
+      </TextField.Root>
+      <Box>
+        <label htmlFor="color">
+          <Text as="span" size={"2"} mb={"2"} className="inline-block">
+            Choissiez une couleur:
+          </Text>
+        </label>
+        <MyColorPickerComponent
+          color={color}
+          onChangeComplete={onChangeComplete}
+        />
+      </Box>
+    </Flex>
+  );
+};
+const ErrorComponent = ({ title, hexCode }: Error) => {
+  return (
+    <>
+      {title && (
+        <Callout.Root>
+          <Callout.Icon>
+            <InfoCircledIcon />
+          </Callout.Icon>
+          <Callout.Text>{title || hexCode}</Callout.Text>
+        </Callout.Root>
+      )}
+
+      {hexCode && (
+        <Callout.Root>
+          <Callout.Icon>
+            <InfoCircledIcon />
+          </Callout.Icon>
+          <Callout.Text>{hexCode}</Callout.Text>
+        </Callout.Root>
+      )}
+    </>
+  );
 };
