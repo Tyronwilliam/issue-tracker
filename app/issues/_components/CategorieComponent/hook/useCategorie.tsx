@@ -93,7 +93,7 @@ const useCategorie = () => {
       .post("/api/categorie/" + id + "/issue/" + issueId, data)
       .then((res) => res)
       .catch((err) => err);
-
+    sendToast(response?.status);
     if (response?.status === 200) {
       router.refresh();
     }
