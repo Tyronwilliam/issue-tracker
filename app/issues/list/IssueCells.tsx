@@ -8,10 +8,10 @@ import { CategorieCustom, Issue } from "@prisma/client";
 import { Flex, Table } from "@radix-ui/themes";
 import AssignStatus from "../[id]/AssignStatus";
 import { IconeTimer } from "./IconeTimer";
-import { IssueWithProject } from "./IssueTable";
-import CustomCategorie from "../_components/CustomCategorie";
+import CustomCategorie from "../_components/CategorieComponent/CustomCategorie";
+import { IssueWithProjectAndCategory } from "./page";
 interface Props {
-  issues?: IssueWithProject[];
+  issues: IssueWithProjectAndCategory[];
   allCategorie: CategorieCustom[];
 }
 const IssueCells = ({ issues, allCategorie }: Props) => {
@@ -45,7 +45,11 @@ const IssueCells = ({ issues, allCategorie }: Props) => {
               <IssueStatusBadge status={issue?.status} />
             </div>
             {/* couleur de background custom */}
-            <CustomCategorie allCategorie={allCategorie} issueId={issue?.id} />
+            <CustomCategorie
+              allCategorie={allCategorie}
+              issueId={issue?.id}
+              issue={issue}
+            />
           </Flex>
         </Table.RowHeaderCell>
         <Table.Cell className="hidden md:table-cell">

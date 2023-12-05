@@ -3,11 +3,14 @@ import { NextRequest, NextResponse } from "next/server";
 
 //('/api/issues/:issueId/categories/:categoryId'
 
-export async function PUT(
+export async function POST(
   request: NextRequest,
   { params }: { params: { id: string; issueId: string } }
 ) {
   const { issueId, id } = params;
+  const body = await request.json();
+  const { isConnect } = body;
+
   // Check if the issue and category exist
   const issue = await prisma.issue.findUnique({
     where: { id: parseInt(issueId) },
@@ -32,14 +35,14 @@ export async function PUT(
       }
     );
   }
+  const categorie = isConnect
+    ? { connect: { id: parseInt(id) } }
+    : { disconnect: { id: parseInt(id) } };
 
-  // Associate the category with the issue
   const connected = await prisma.issue.update({
     where: { id: parseInt(issueId) },
     data: {
-      categorie: {
-        connect: { id: parseInt(id) },
-      },
+      categorie,
     },
   });
   return NextResponse.json(connected, { status: 200 });

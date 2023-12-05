@@ -4,17 +4,18 @@ import Pagination from "@/app/components/Pagination";
 import ProjectFilter from "@/app/issues/list/ProjectFilter";
 import { getProjectsAssociatedWithUser } from "@/app/utils/service/userRelation";
 import prisma from "@/prisma/client";
-import { Status } from "@prisma/client";
+import { CategorieCustom, Issue, Project, Status } from "@prisma/client";
 import { Flex } from "@radix-ui/themes";
 import { getServerSession } from "next-auth";
 import IssueAction from "./IssueAction";
 import IssueFilterStatut from "./IssueFilterStatut";
 import IssueFilterUser from "./IssueFilterUser";
-import IssueTable, {
-  IssueQuery,
-  IssueWithProject,
-  columnName,
-} from "./IssueTable";
+import IssueTable, { IssueQuery, columnName } from "./IssueTable";
+
+export type IssueWithProjectAndCategory = Issue & {
+  Project?: Project;
+  categorie?: CategorieCustom[];
+};
 
 const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
   const session = await getServerSession(authOptions);
@@ -67,8 +68,9 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
     take: pageSize,
     include: {
       Project: true,
+      categorie: true,
     },
-  })) as IssueWithProject[];
+  })) as IssueWithProjectAndCategory[];
 
   const allUsers = await prisma.user.findMany({ orderBy: { name: "asc" } });
 

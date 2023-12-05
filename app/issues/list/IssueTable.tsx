@@ -4,6 +4,7 @@ import { Box, Flex, Table } from "@radix-ui/themes";
 import NextLink from "next/link";
 import FastCreationIssue from "./FastCreationIssue";
 import IssueCells from "./IssueCells";
+import { IssueWithProjectAndCategory } from "./page";
 
 export interface IssueQuery {
   status: Status;
@@ -12,11 +13,11 @@ export interface IssueQuery {
   user: string;
   projectId: string;
 }
-export type IssueWithProject = Omit<Issue, "Project"> & { Project?: Project };
 
 interface Props {
   searchParams: IssueQuery;
-  issues?: IssueWithProject[];
+  // issues?: IssueWithProject[];
+  issues: IssueWithProjectAndCategory[];
   projectsAssociatedWithUser: Project[];
   allCategorie: CategorieCustom[];
 }
