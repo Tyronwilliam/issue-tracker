@@ -37,28 +37,33 @@ const IssueCells = ({ issues, allCategorie }: Props) => {
     setOpenQuickEdit(!openQuickEdit);
     setSelectId(id);
   };
+
+  const handlePatchIsue = async (issueId: number) => {
+    let data = {
+      title: title.current?.value,
+    };
+    const response = await axios
+      .patch("/api/issues/" + issueId, data)
+      .then((res) => res)
+      .catch((err) => err);
+    if (response?.status === 200) {
+      toast.success("C'est fait !");
+
+      setOpenQuickEdit(!openQuickEdit);
+      router.refresh();
+    } else {
+      const error = response?.response?.data?.title?._errors[0];
+      toast.error(error);
+    }
+  };
   const handlePressKey = async (
     e: React.KeyboardEvent<HTMLInputElement>,
     issueId: number
   ) => {
-    let data = {
-      title: title.current?.value,
-    };
     if (e.key === "Enter") {
-      const response = await axios
-        .patch("/api/issues/" + issueId, data)
-        .then((res) => res)
-        .catch((err) => err);
-      if (response?.status === 200) {
-        setOpenQuickEdit(!openQuickEdit);
-        router.refresh();
-      } else {
-        const error = response?.response?.data?.title?._errors[0];
-        toast.error(error);
-      }
+      handlePatchIsue(issueId);
     }
   };
-  const quickEditTitle = async (e: any) => {};
   return issues?.map((issue) => {
     const date = new Date(issue?.createdAt);
     const formatDate = date.toLocaleDateString(undefined, options);
@@ -81,6 +86,7 @@ const IssueCells = ({ issues, allCategorie }: Props) => {
                 issueId={issue?.id}
                 selectId={selectId}
                 handlePressKey={handlePressKey}
+                handlePatchIsue={handlePatchIsue}
               />
             </div>
             <div className="block md:hidden">

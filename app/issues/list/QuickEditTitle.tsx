@@ -1,5 +1,5 @@
 import { Link } from "@/app/components";
-import { Cross1Icon, Pencil1Icon } from "@radix-ui/react-icons";
+import { CheckIcon, Cross1Icon, Pencil1Icon } from "@radix-ui/react-icons";
 import { Box, TextField, Tooltip } from "@radix-ui/themes";
 import React, { Ref } from "react";
 
@@ -11,6 +11,7 @@ const QuickEditTitle = ({
   issueId,
   selectId,
   handlePressKey,
+  handlePatchIsue,
 }: {
   openQuickEdit: boolean;
   toggleQuickEdit: (id: number) => void;
@@ -22,6 +23,7 @@ const QuickEditTitle = ({
     e: React.KeyboardEvent<HTMLInputElement>,
     issueId: number
   ) => void;
+  handlePatchIsue: (issueId: number) => void;
 }) => {
   return (
     <Box>
@@ -38,9 +40,14 @@ const QuickEditTitle = ({
               onKeyDown={(e) => handlePressKey(e, issueId)}
             />
           </TextField.Root>
+
+          <CheckIcon
+            onClick={() => handlePatchIsue(issueId)}
+            className="cursor-pointer"
+          />
           <Cross1Icon
             onClick={() => toggleQuickEdit(issueId)}
-            className="cursor-pointer"
+            className="cursor-pointer w-[13px] h-[13px]"
           />
         </Box>
       ) : (
