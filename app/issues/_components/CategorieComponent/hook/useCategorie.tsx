@@ -1,6 +1,6 @@
 import axios from "axios";
 import { useRouter } from "next/navigation";
-import React, { useRef, useState } from "react";
+import { useRef, useState } from "react";
 import { ColorResult } from "react-color";
 import toast from "react-hot-toast";
 export interface Error {
@@ -18,6 +18,8 @@ const useCategorie = () => {
   const [open, setOpen] = useState(false);
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSelect, setIsSelect] = useState(true);
+  const [maxCategorie, setMaxCategorie] = useState<boolean>(false);
+
   const sendToast = (status: number) => {
     if (status === 200) {
       toast.success("C'est fait !");
@@ -42,6 +44,7 @@ const useCategorie = () => {
     if (response?.status === 200) {
       setOpen(false);
       setIsSubmitting(false);
+      setIsSelect(true);
       toast.success("C'est fait !");
       router.refresh();
     } else {
@@ -80,6 +83,7 @@ const useCategorie = () => {
       sendToast(response?.status);
       if (res?.status === 200) {
         setOpen(!open);
+        router.refresh();
       }
     } else {
       toast.error("Oups ! Invalide Id");
@@ -97,7 +101,6 @@ const useCategorie = () => {
     if (response?.status === 200) {
       router.refresh();
     }
-    console.log(response, "DISCONNECT ");
   };
   return {
     title,
@@ -115,6 +118,8 @@ const useCategorie = () => {
     handleSelect,
     handleSubmit,
     disconnectCategorie,
+    maxCategorie,
+    setMaxCategorie,
   };
 };
 

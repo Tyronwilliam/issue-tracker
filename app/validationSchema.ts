@@ -25,9 +25,9 @@ export const patchCategorieSchema = z.object({
     .string()
     .min(1, "Nom de catégorie requis")
     .max(50, "50 caractère maximum"),
+
   hexCode: z
     .string()
     .min(7, "Une couleur est requise")
-    .max(7, "Couleur invalide")
-    .optional(),
+    .max(7, "Couleur invalide"),
 });

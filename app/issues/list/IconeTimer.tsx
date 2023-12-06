@@ -7,11 +7,10 @@ import { Tooltip } from "@radix-ui/themes";
 import { AxiosResponse } from "axios";
 import React from "react";
 import TimeEdit from "../_components/TimeEdit";
-import { IssueWithProject } from "./IssueTable";
 import { IssueWithTime } from "./IssueCells";
 type IconeTimerProps = {
   createTimer: (issue: Issue) => void;
-  issue: IssueWithProject | IssueWithTime;
+  issue: IssueWithTime;
   timerRunning: boolean;
   currentTimer: Issue | null | IssueWithTime;
   setCurrentTimer: (arg: Issue | null | IssueWithTime) => void;

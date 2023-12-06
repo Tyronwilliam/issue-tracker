@@ -49,7 +49,7 @@ export async function PATCH(
     ? { connect: { id: userId } }
     : { disconnect: { id: userId } };
 
-  const categorie = { connect: { id: parseInt(categorieId) } };
+  const categorie = categorieId && { connect: { id: parseInt(categorieId) } };
 
   if (!issue)
     return NextResponse.json({ error: "Invalid id" }, { status: 404 });

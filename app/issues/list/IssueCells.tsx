@@ -10,11 +10,17 @@ import AssignStatus from "../[id]/AssignStatus";
 import { IconeTimer } from "./IconeTimer";
 import CustomCategorie from "../_components/CategorieComponent/CustomCategorie";
 import { IssueWithProjectAndCategory } from "./page";
+import QuickEditTitle from "./QuickEditTitle";
+import { useRef, useState } from "react";
+import axios from "axios";
+import { useRouter } from "next/navigation";
+import toast from "react-hot-toast";
 interface Props {
   issues: IssueWithProjectAndCategory[];
   allCategorie: CategorieCustom[];
 }
 const IssueCells = ({ issues, allCategorie }: Props) => {
+  const router = useRouter();
   const {
     setShowToast,
     setCurrentTimer,
@@ -24,7 +30,35 @@ const IssueCells = ({ issues, allCategorie }: Props) => {
   } = useTimerContext();
   const { open, toggle, itemId } = useToggle();
   const { issueTime, handleTimeChange, setIssueTime } = useIssueContext();
-
+  const title = useRef<HTMLInputElement>(null);
+  const [openQuickEdit, setOpenQuickEdit] = useState(false);
+  const [selectId, setSelectId] = useState<number | null>(null);
+  const toggleQuickEdit = (id: number) => {
+    setOpenQuickEdit(!openQuickEdit);
+    setSelectId(id);
+  };
+  const handlePressKey = async (
+    e: React.KeyboardEvent<HTMLInputElement>,
+    issueId: number
+  ) => {
+    let data = {
+      title: title.current?.value,
+    };
+    if (e.key === "Enter") {
+      const response = await axios
+        .patch("/api/issues/" + issueId, data)
+        .then((res) => res)
+        .catch((err) => err);
+      if (response?.status === 200) {
+        setOpenQuickEdit(!openQuickEdit);
+        router.refresh();
+      } else {
+        const error = response?.response?.data?.title?._errors[0];
+        toast.error(error);
+      }
+    }
+  };
+  const quickEditTitle = async (e: any) => {};
   return issues?.map((issue) => {
     const date = new Date(issue?.createdAt);
     const formatDate = date.toLocaleDateString(undefined, options);
@@ -38,8 +72,16 @@ const IssueCells = ({ issues, allCategorie }: Props) => {
             gap={"3"}
             className="flex flex-col	item-start md:flex-row	 md:items-center"
           >
-            <div className="max-w-[180px]  overflow-hidden text-ellipsis whitespace-nowrap">
-              <Link href={`/issues/${issue?.id}`}>{issue?.title}</Link>{" "}
+            <div className="flex gap-2 items-center">
+              <QuickEditTitle
+                openQuickEdit={openQuickEdit}
+                toggleQuickEdit={toggleQuickEdit}
+                title={title}
+                isssueTitle={issue?.title}
+                issueId={issue?.id}
+                selectId={selectId}
+                handlePressKey={handlePressKey}
+              />
             </div>
             <div className="block md:hidden">
               <IssueStatusBadge status={issue?.status} />

@@ -6,7 +6,7 @@ import FormComponent from "./FormComponent";
 import SelectComponent from "./SelectComponentCategorie";
 import useCategorie, { Error } from "./hook/useCategorie";
 import { IssueWithProjectAndCategory } from "../../list/page";
-import React from "react";
+import React, { useEffect } from "react";
 import DisplayCategorie from "./DisplayCategorie";
 
 interface CategorieProps {
@@ -35,8 +35,17 @@ const CustomCategorie = ({
     handleSelect,
     handleSubmit,
     disconnectCategorie,
+    maxCategorie,
+    setMaxCategorie,
+    setError,
   } = useCategorie();
 
+  useEffect(() => {
+    if (issue?.categorie) {
+      const isOverMax = issue?.categorie?.length >= 3 ? true : false;
+      setMaxCategorie(isOverMax);
+    }
+  }, [issue]);
   return (
     <Dialog.Root open={open} onOpenChange={() => setOpen(true)}>
       <Dialog.Trigger>
@@ -57,16 +66,26 @@ const CustomCategorie = ({
           disconnectCategorie={disconnectCategorie}
         />
         <Flex gap="3" mt="4" direction={"column"}>
-          <Flex gap="3" mt="4" align={"center"}>
+          <Flex
+            gap="3"
+            mt="4"
+            align={"center"}
+            className="md:flex-row flex-col"
+          >
             {isSelect && (
               <>
                 <SelectComponent
                   issueId={issueId}
                   allCategorie={allCategorie}
                   handleSelect={handleSelect}
+                  maxCategorie={maxCategorie}
+                  currentCategorie={issue?.categorie}
                 />
                 <Text as="span">Ou</Text>
-                <Button onClick={() => setIsSelect(false)}>
+                <Button
+                  onClick={() => setIsSelect(false)}
+                  disabled={maxCategorie}
+                >
                   Créer une catégorie
                 </Button>
               </>
@@ -80,13 +99,22 @@ const CustomCategorie = ({
                 color={color}
               />
             )}
-            <Flex gap="3" mt="4" justify="end">
+            <Flex
+              gap="3"
+              mt="4"
+              justify={{ initial: "center", sm: "end" }}
+              align={"center"}
+            >
               <Button
                 variant="soft"
                 color="gray"
                 onClick={() => {
                   setOpen(false);
                   setIsSelect(true);
+                  setError({
+                    title: "",
+                    hexCode: "",
+                  });
                 }}
                 type="button"
               >
@@ -94,7 +122,7 @@ const CustomCategorie = ({
               </Button>
               <Dialog.Close>
                 <Button
-                  disabled={isSubmitting}
+                  disabled={isSubmitting || isSelect}
                   aria-label="Close"
                   type="submit"
                 >
@@ -125,7 +153,7 @@ const ErrorComponent = ({ title, hexCode }: Error) => {
       )}
 
       {hexCode && (
-        <Callout.Root>
+        <Callout.Root className="mb-2">
           <Callout.Icon>
             <InfoCircledIcon />
           </Callout.Icon>
