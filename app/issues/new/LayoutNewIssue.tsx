@@ -18,7 +18,7 @@ const LayoutNewIssue = ({
 }) => {
   const { issueTime, handleTimeChange, setIssueTime } = useIssueContext();
   return (
-    <>
+    <React.Fragment>
       <IssueForm />
       <Flex direction={"column"} gap={"3"} width={"min-content"}>
         <Box>
@@ -33,7 +33,7 @@ const LayoutNewIssue = ({
           />
         </Box>
       </Flex>
-    </>
+    </React.Fragment>
   );
 };
 

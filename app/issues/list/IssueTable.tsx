@@ -12,11 +12,11 @@ export interface IssueQuery {
   page: string;
   user: string;
   projectId: string;
+  tri: string;
 }
 
 interface Props {
   searchParams: IssueQuery;
-  // issues?: IssueWithProject[];
   issues: IssueWithProjectAndCategory[];
   projectsAssociatedWithUser: Project[];
   allCategorie: CategorieCustom[];
@@ -48,14 +48,18 @@ const IssueTable = ({
                   >
                     <NextLink
                       href={{
-                        query: { ...searchParams, orderBy: column.value },
+                        query: {
+                          ...searchParams,
+                          orderBy: column.value,
+                          tri: searchParams?.tri === "asc" ? "desc" : "asc",
+                        },
                       }}
                     >
                       {column.label}
+                      {column.value === searchParams.orderBy && (
+                        <CaretSortIcon className="inline" />
+                      )}
                     </NextLink>
-                    {column.value === searchParams.orderBy && (
-                      <CaretSortIcon className="inline" />
-                    )}
                   </Table.ColumnHeaderCell>
                 );
               })}
@@ -80,12 +84,12 @@ const columns: { label: string; value: keyof Issue; className?: string }[] = [
 
   {
     label: "Minuteur",
-    value: "title",
+    value: "timer",
     className: "hidden md:table-cell",
   },
   {
     label: "Projet",
-    value: "title",
+    value: "projectId",
     className: "hidden md:table-cell",
   },
   {

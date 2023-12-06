@@ -6,6 +6,7 @@ export const issueSchema = z.object({
   userId: z.string().min(1, "Un id est requis").max(255).optional(),
   projectId: z.number().optional(),
   timer: z.number().optional(),
+  creator: z.number().optional(),
 });
 export const patchIssueSchema = z.object({
   title: z.string().min(1, "Titre est requis").max(255).optional(),

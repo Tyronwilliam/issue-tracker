@@ -42,7 +42,10 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
 
   const userId = searchParams.user;
   const orderBy = columnName.includes(searchParams.orderBy)
-    ? { [searchParams.orderBy]: "asc" }
+    ? {
+        [searchParams.orderBy]:
+          (searchParams?.tri && searchParams?.tri) || "asc",
+      }
     : undefined;
 
   const users = {

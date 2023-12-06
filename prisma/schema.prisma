@@ -33,6 +33,13 @@ model Project {
   issueId   Issue[]
 }
 
+model Creator {
+  id     Int     @id @default(autoincrement())
+  users  User    @relation(fields: [userId], references: [id])
+  userId String
+  Issue  Issue[]
+}
+
 model Issue {
   id          Int               @id @default(autoincrement())
   title       String            @db.VarChar(255) //varchar (191)
@@ -45,6 +52,8 @@ model Issue {
   users       User[]
   timer       Int               @default(0)
   categorie   CategorieCustom[]
+  creator     Creator?          @relation(fields: [creatorId], references: [id])
+  creatorId   Int?
 }
 
 model User {
@@ -57,6 +66,7 @@ model User {
   sessions      Session[]
   projectId     Project[]
   issues        Issue[]
+  Creator       Creator[]
 }
 
 model Account {
