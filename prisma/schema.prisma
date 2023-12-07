@@ -16,6 +16,12 @@ enum Status {
   CLOSED
 }
 
+enum Role {
+  ADMIN
+  COLLABORATOR
+  CLIENT
+}
+
 model CategorieCustom {
   id      Int     @id @default(autoincrement())
   title   String
@@ -31,6 +37,8 @@ model Project {
   updatedAt DateTime @updatedAt
   user      User[]
   issueId   Issue[]
+
+
 }
 
 model Creator {
@@ -67,6 +75,7 @@ model User {
   projectId     Project[]
   issues        Issue[]
   Creator       Creator[]
+  role          Role
 }
 
 model Account {

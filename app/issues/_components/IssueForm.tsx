@@ -56,9 +56,18 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
         data.projectId = projectId || undefined;
         data.userId = session?.user?.id;
         // ICI il va falloir creer une route api pour créer la ROW creator ensuite l'assignée à la tache ( user id , id de la tache)
-        data.creator = session?.user?.id;
+        const id = session?.user?.id;
         const res = await axios.post("/api/issues", data);
-        console.log(res);
+
+        if (res?.status === 201) {
+          console.log(res);
+          const issueId = res?.data?.id;
+          console.log(issueId, "ISSUE ID");
+          const resCreator = await axios.post(
+            "/api/creator/" + id + "/issue/" + issueId
+          );
+          console.log(resCreator, " RES CREATOR");
+        }
       }
       setIsSubmitting(false);
       router.push("/issues/list?projectId=" + projectId);

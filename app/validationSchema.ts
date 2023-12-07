@@ -6,7 +6,7 @@ export const issueSchema = z.object({
   userId: z.string().min(1, "Un id est requis").max(255).optional(),
   projectId: z.number().optional(),
   timer: z.number().optional(),
-  creator: z.number().optional(),
+  // creator: z.number().optional(),
 });
 export const patchIssueSchema = z.object({
   title: z.string().min(1, "Titre est requis").max(255).optional(),
@@ -31,4 +31,8 @@ export const patchCategorieSchema = z.object({
     .string()
     .min(7, "Une couleur est requise")
     .max(7, "Couleur invalide"),
+});
+
+export const creatorSchema = z.object({
+  userId: z.number(),
 });
