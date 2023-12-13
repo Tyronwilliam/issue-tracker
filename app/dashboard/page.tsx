@@ -4,10 +4,11 @@ import { CreateProject } from "./projects/[id]/CreateProject";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
 import ProjectsTable from "./ProjectsTable";
-import { Flex, Heading } from "@radix-ui/themes";
+import { Box, Flex, Heading } from "@radix-ui/themes";
 import { getRandomColor } from "../utils/service/styleFunction";
 import DialogProject from "./projects/[id]/DialogProject";
 import prisma from "@/prisma/client";
+import Invitation from "./Invitation";
 
 const ProjectsRecapPage = async () => {
   const session = await getServerSession(authOptions);
@@ -17,7 +18,7 @@ const ProjectsRecapPage = async () => {
   );
   if (projectsAssociatedWithUser?.length === 0)
     return <CreateProject session={session} />;
-//////////////////////////////////// GET PROJECT ASSSOCIATED WITH ADMI//////////////
+  //////////////////////////////////// GET PROJECT ASSSOCIATED WITH ADMI//////////////
   // const projectsWhereUserIsAdmin = await prisma.admin.findMany({
   //   where: {
   //     users: { some: { id: session?.user?.id } },
@@ -71,7 +72,9 @@ const ProjectsRecapPage = async () => {
         mb={"5"}
       >
         <Heading>Projets</Heading>
-        <DialogProject session={session} />
+        <Box className="flex gap-2 flex-col md:flex-row">
+          <DialogProject session={session} />
+        </Box>
       </Flex>
       <ProjectsTable
         projects={projectsAssociatedWithUser}

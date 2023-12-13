@@ -56,6 +56,7 @@ model Project {
   admin        Admin?
   collaborator Collaborator[]
   Client       Client?
+  Invitation   Invitation[]
 }
 
 model Creator {
@@ -79,6 +80,15 @@ model Issue {
   categorie   CategorieCustom[]
   creator     Creator?          @relation(fields: [creatorId], references: [id])
   creatorId   Int?
+}
+
+model Invitation {
+  id           Int      @id @default(autoincrement())
+  projectId    Int
+  project      Project  @relation(fields: [projectId], references: [id])
+  token        String   @unique
+  invitedEmail String
+  expiresAt    DateTime
 }
 
 model User {

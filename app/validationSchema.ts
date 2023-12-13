@@ -37,3 +37,12 @@ export const patchCategorieSchema = z.object({
 export const creatorSchema = z.object({
   userId: z.number(),
 });
+export const invitationSchema = z.object({
+  projectId: z
+    .number()
+    .refine((value) => value >= 1, {
+      message: "Un ID de projet est requis",
+    })
+    .optional(),
+  emails: z.array(z.string().email()),
+});
