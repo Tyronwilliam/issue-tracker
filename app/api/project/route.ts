@@ -37,10 +37,26 @@ export async function POST(request: NextRequest) {
   const createProject = await prisma.project.create({
     data: {
       title: title,
+      creatorId: userId,
       user: {
         connect: { id: userId },
       },
     },
   });
+  console.log(createProject, "Hello world");
+
+  if (createProject) {
+    const Admin = await prisma.admin.create({
+      data: {
+        projectId: createProject?.id,
+        users: {
+          connect: { id: userId },
+        },
+      },
+    });
+
+    console.log(Admin, "ADMIN");
+  }
+
   return NextResponse.json(createProject, { status: 201 });
 }

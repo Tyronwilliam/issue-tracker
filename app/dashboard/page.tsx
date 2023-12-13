@@ -7,6 +7,7 @@ import ProjectsTable from "./ProjectsTable";
 import { Flex, Heading } from "@radix-ui/themes";
 import { getRandomColor } from "../utils/service/styleFunction";
 import DialogProject from "./projects/[id]/DialogProject";
+import prisma from "@/prisma/client";
 
 const ProjectsRecapPage = async () => {
   const session = await getServerSession(authOptions);
@@ -16,7 +17,17 @@ const ProjectsRecapPage = async () => {
   );
   if (projectsAssociatedWithUser?.length === 0)
     return <CreateProject session={session} />;
-
+//////////////////////////////////// GET PROJECT ASSSOCIATED WITH ADMI//////////////
+  // const projectsWhereUserIsAdmin = await prisma.admin.findMany({
+  //   where: {
+  //     users: { some: { id: session?.user?.id } },
+  //   },
+  //   select: {
+  //     project: true,
+  //   },
+  // });
+  // console.log(projectsWhereUserIsAdmin, "PROJECT ADMIN");
+  /////////////////////////////////////////////////////////
   const totalTimeArray = projectsAssociatedWithUser?.map((project) => {
     const projectTime = project?.issueId?.reduce((projectAcc, issue) => {
       const time = issue?.timer || 0;

@@ -19,6 +19,7 @@ export const patchIssueSchema = z.object({
 export const projectSchema = z.object({
   title: z.string().min(1, "Titre est requis").max(50, "50 caractère maximum"),
   userId: z.string().min(1, "Un id est requis").max(255).optional(),
+  creatorId: z.string().optional(),
 });
 
 export const patchCategorieSchema = z.object({

@@ -51,7 +51,6 @@ const DialogProject = ({ session }: { session: Session | null }) => {
   });
   return (
     <>
-      {/* <Button onClick={() => toast.add("HELLO WORD")}>Test Toast</Button>{" "} */}
       {error && (
         <Callout.Root color="red" className="mb-5">
           <Callout.Icon>
