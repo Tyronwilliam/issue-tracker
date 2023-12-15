@@ -1,5 +1,5 @@
 "use client";
-import { Skeleton } from "@/app/components";
+import { Skeleton } from "@/app/(home)/components";
 import {
   Avatar,
   Box,
@@ -13,7 +13,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AiFillBug } from "react-icons/ai";
-import { useProjectContext } from "./hooks/useProjectContext";
+import { useProjectContext } from "./(home)/hooks/useProjectContext";
 
 const links = [
   {

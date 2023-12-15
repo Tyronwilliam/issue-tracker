@@ -4,12 +4,13 @@ import type { Metadata } from "next";
 import { Inter } from "next/font/google";
 import NavBar from "./NavBar";
 import QueryClientProvider from "./QueryClientProvider";
-import AuthProvider from "./auth/Provider";
 import "./globals.css";
-import { IssueContextProvider } from "./hooks/useIssueContext";
-import { ProjectContextProvider } from "./hooks/useProjectContext";
-import { TimerContextProvider } from "./hooks/useTimerContext";
+
 import "./theme-config.css";
+import AuthProvider from "./(home)/auth/Provider";
+import { ProjectContextProvider } from "./(home)/hooks/useProjectContext";
+import { IssueContextProvider } from "./(home)/hooks/useIssueContext";
+import { TimerContextProvider } from "./(home)/hooks/useTimerContext";
 
 const inter = Inter({
   subsets: ["latin"],
@@ -35,10 +36,7 @@ export default function RootLayout({
             <ProjectContextProvider>
               <IssueContextProvider>
                 <Theme accentColor="purple">
-                  <TimerContextProvider>
-                    <NavBar />
-                    <main className="p-5">{children}</main>
-                  </TimerContextProvider>
+                  <TimerContextProvider>{children}</TimerContextProvider>
                 </Theme>
               </IssueContextProvider>
             </ProjectContextProvider>
