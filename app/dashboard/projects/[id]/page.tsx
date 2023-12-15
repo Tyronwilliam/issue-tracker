@@ -8,6 +8,7 @@ import IssueChart from "./IssueChart";
 import IssueSummary from "./IssueSummary";
 import LatestIssue from "./LatestIssue";
 import Invitation from "../../Invitation";
+import DialogProject from "./DialogProject";
 
 interface Props {
   params: { id: string };
@@ -65,9 +66,6 @@ const DashboardSingleProject = async ({ params }: Props) => {
           <IssueStatusBadge status={status} />
         </Box>
         <Invitation />
-        {/* <Flex gap={"2"} direction={{ initial: "column", xs: "row" }}>
-          <DialogProject session={session} />
-        </Flex> */}
       </Flex>
       <Grid columns={{ initial: "1", md: "2" }} gap={"5"}>
         <IssueChart closed={closed} open={open} inProgress={inProgress} />{" "}

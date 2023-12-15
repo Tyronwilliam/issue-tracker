@@ -49,6 +49,6 @@ export async function POST(request: NextRequest) {
     }
     return invitation;
   });
-  console.log(sendEmail, "SEND EMAIL");
+  console.log(sendEmail?.status, "SEND EMAIL");
   return NextResponse.json(sendEmail, { status: 200 });
 }
