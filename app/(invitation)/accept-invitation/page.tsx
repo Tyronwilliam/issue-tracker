@@ -7,6 +7,8 @@ import { projectSchema } from "@/app/validationSchema";
 import { ProjectFormData } from "@/app/(home)/dashboard/projects/[id]/CreateProject";
 import { ErrorMessage, Spinner } from "@/app/(home)/components";
 
+// Sur la page implementer une connection Google ou une connection Basic (NextAuth)
+
 const InvitationPage = () => {
   const [isSubmitting, setIsSubmitting] = useState(false);
   const {
@@ -26,7 +28,7 @@ const InvitationPage = () => {
       </Heading>
       <form
         onSubmit={onSubmit}
-        className="max-w-[450px] mx-auto my-6 flex flex-col gap-2 min-w-[300px] "
+        className="max-w-[450px] mx-auto my-6 flex flex-col gap-2 w-full"
       >
         <TextField.Input placeholder="Mot de passe" {...register("title")} />
         <TextField.Input
