@@ -11,9 +11,8 @@ import {
   TextField,
 } from "@radix-ui/themes";
 import axios from "axios";
-import { useSession } from "next-auth/react";
 import { useRouter } from "next/navigation";
-import React, { useState } from "react";
+import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
 import { z } from "zod";
@@ -26,7 +25,7 @@ const Invitation = () => {
   const [open, setOpen] = useState(false);
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
-  const { setProjectId, projectId } = useProjectContext();
+  const { projectId } = useProjectContext();
   const [emails, setEmails] = useState([""]); // State pour stocker les adresses e-mail
 
   const router = useRouter();
