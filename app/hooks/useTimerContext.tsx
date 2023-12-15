@@ -1,19 +1,28 @@
-// useProjectContext.tsx
 "use client";
+import { Issue } from "@prisma/client";
 import {
-  Dispatch,
   ReactNode,
-  SetStateAction,
   createContext,
   useContext,
+  useEffect,
   useState,
 } from "react";
-import { TaskList } from "../components/TimerToast";
+import { TaskList } from "../components";
+import TimerButton from "../components/Timer/TimerButton";
+import { IssueWithTime } from "../issues/list/IssueCells";
+import AlertCurrentTimer from "../components/Timer/AlertCurrentTimer";
 
 // Définissez le type pour les données de contexte
 type StopwatchData = {
-  timers: any[];
-  setTimers: Dispatch<SetStateAction<any[]>>;
+  showToast: boolean;
+  setShowToast: (showToast: boolean) => void;
+  currentTimer: Issue | null | IssueWithTime;
+  setCurrentTimer: (arg: Issue | null | IssueWithTime) => void | IssueWithTime;
+  createTimer: (issue: Issue) => void;
+  timerRunning: boolean;
+  setTimerRunning: (timerRunning: boolean) => void;
+  showAlert: boolean;
+  setShowAlert: (showAlert: boolean) => void;
 };
 
 // Créez le context
@@ -21,17 +30,35 @@ const TimerContext = createContext<StopwatchData | null>(null);
 
 // Créez un fournisseur de contexte
 export function TimerContextProvider({ children }: { children: ReactNode }) {
-  const [timers, setTimers] = useState<any[]>([]);
-  console.log(timers, "wesh");
+  const [showToast, setShowToast] = useState(false);
+  const [currentTimer, setCurrentTimer] = useState<
+    StopwatchData["currentTimer"] | null
+  >(null);
+  const [timerRunning, setTimerRunning] = useState<boolean>(false);
+  const [showAlert, setShowAlert] = useState<boolean>(false);
+
+  const createTimer = async (issue: Issue) => {
+    setCurrentTimer(issue);
+    setShowToast(true);
+  };
+  useEffect(() => {
+    if (!timerRunning) setShowAlert(false);
+  }, [timerRunning]);
+  const value: StopwatchData = {
+    showToast,
+    setShowToast,
+    currentTimer,
+    setCurrentTimer,
+    createTimer,
+    timerRunning,
+    setTimerRunning,
+    showAlert,
+    setShowAlert,
+  };
   return (
-    <TimerContext.Provider
-      value={{
-        timers,
-        setTimers,
-      }}
-    >
-      <TaskList />
-      {children}
+    <TimerContext.Provider value={value}>
+      {children} <TaskList /> <AlertCurrentTimer />
+      <TimerButton />
     </TimerContext.Provider>
   );
 }

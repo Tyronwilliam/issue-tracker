@@ -13,6 +13,7 @@ import { useSession } from "next-auth/react";
 import Link from "next/link";
 import { usePathname } from "next/navigation";
 import { AiFillBug } from "react-icons/ai";
+import { useProjectContext } from "./hooks/useProjectContext";
 
 const links = [
   {
@@ -20,14 +21,16 @@ const links = [
     href: "/dashboard",
   },
   {
-    label: "Issues",
+    label: "Tâches",
     href: "/issues/list",
   },
 ];
 const NavBar = () => {
+  const { projectId } = useProjectContext();
+
   const currentPath = usePathname();
   return (
-    <nav className="border-b mb-5 px-5 py-5">
+    <nav className="border-b mb-5 px-5 py-5 z-30 relative">
       <Container>
         <Flex align="center" justify="between">
           <Flex align="center" gap="5">
@@ -36,9 +39,15 @@ const NavBar = () => {
             </Link>
             <ul className="flex space-x-6">
               {links?.map((link) => (
-                <li key={link.href}>
+                <li key={link.href} onClick={() => console.log("click")}>
                   <Link
-                    href={link.href}
+                    href={`${
+                      link.href === "/issues/list" &&
+                      projectId !== null &&
+                      !Number.isNaN(projectId)
+                        ? `${link.href}?projectId=${projectId}`
+                        : link.href
+                    }`}
                     className={classnames({
                       "nav-link": true,
                       "!text-zinc-900": link.href === currentPath,

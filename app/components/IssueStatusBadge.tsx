@@ -11,12 +11,11 @@ const statusMap: Record<
   CLOSED: { label: "Fait", color: "green" },
 };
 
-const IssueStatusBadge = ({ status }: { status: Status }) => {
+const IssueStatusBadge: any = ({ status }: { status: Status | undefined }) => {
   return (
-    
-    <Badge color={statusMap[status].color} >
-      {statusMap[status].label}
-    </Badge>
+    status && (
+      <Badge color={statusMap[status].color}>{statusMap[status].label}</Badge>
+    )
   );
 };
 

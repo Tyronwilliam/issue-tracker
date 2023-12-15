@@ -1,19 +1,16 @@
-import prisma from "@/prisma/client";
-import { Box, Flex, Grid, Heading } from "@radix-ui/themes";
+import React from "react";
+import { getProjectsAssociatedWithUser } from "../utils/service/userRelation";
+import { CreateProject } from "./projects/[id]/CreateProject";
 import { getServerSession } from "next-auth";
 import { authOptions } from "../api/auth/[...nextauth]/route";
-import { IssueStatusBadge } from "../components";
-import { getProjectsAssociatedWithUser } from "../utils/service/userRelation";
-import { CreateProject, DialogProject } from "./CreateProject";
-import IssueChart from "./IssueChart";
-import IssueSummary from "./IssueSummary";
-import LatestIssue from "./LatestIssue";
-import ProjectFilter from "./ProjectFilter";
+import ProjectsTable from "./ProjectsTable";
+import { Box, Flex, Heading } from "@radix-ui/themes";
+import { getRandomColor } from "../utils/service/styleFunction";
+import DialogProject from "./projects/[id]/DialogProject";
+import prisma from "@/prisma/client";
+import Invitation from "./Invitation";
 
-interface Props {
-  searchParams: { project: string };
-}
-const Dashboard = async ({ searchParams }: Props) => {
+const ProjectsRecapPage = async () => {
   const session = await getServerSession(authOptions);
 
   const projectsAssociatedWithUser = await getProjectsAssociatedWithUser(
@@ -21,80 +18,71 @@ const Dashboard = async ({ searchParams }: Props) => {
   );
   if (projectsAssociatedWithUser?.length === 0)
     return <CreateProject session={session} />;
+  //////////////////////////////////// GET PROJECT ASSSOCIATED WITH ADMI//////////////
+  // const projectsWhereUserIsAdmin = await prisma.admin.findMany({
+  //   where: {
+  //     users: { some: { id: session?.user?.id } },
+  //   },
+  //   select: {
+  //     project: true,
+  //   },
+  // });
+  // console.log(projectsWhereUserIsAdmin, "PROJECT ADMIN");
+  /////////////////////////////////////////////////////////
+  const totalTimeArray = projectsAssociatedWithUser?.map((project) => {
+    const projectTime = project?.issueId?.reduce((projectAcc, issue) => {
+      const time = issue?.timer || 0;
+      return projectAcc + time;
+    }, 0);
 
-  const realProjectId = parseInt(searchParams.project);
-
-  const projectIndex = projectsAssociatedWithUser.findIndex(
-    (project) => project.id === realProjectId
-  );
-
-  const isProjectValid = projectIndex !== -1;
-  const projectId = isProjectValid
-    ? realProjectId
-    : projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].id;
-
-  const lastProjectId =
-    projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].id;
-
-  const titleProject = isProjectValid
-    ? projectsAssociatedWithUser[projectIndex]?.title
-    : projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].title;
-
-  const status = isProjectValid
-    ? projectsAssociatedWithUser[projectIndex]?.status
-    : projectsAssociatedWithUser[projectsAssociatedWithUser.length - 1].status;
-
-  const open = await prisma.issue.count({
-    where: {
-      status: "OPEN",
-      projectId: projectId,
-    },
+    return {
+      projectId: project.id,
+      totalTime: projectTime,
+    };
   });
-  const closed = await prisma.issue.count({
-    where: {
-      status: "CLOSED",
-      projectId: projectId,
-    },
-  });
-  const inProgress = await prisma.issue.count({
-    where: {
-      status: "IN_PROGRESS",
-      projectId: projectId,
-    },
+
+  const avancementArray = projectsAssociatedWithUser?.map((project) => {
+    // Compter le nombre total d'issues et le nombre d'issues "CLOSED"
+    let totalIssues = 0;
+    let closedIssues = 0;
+
+    project?.issueId?.forEach((issue) => {
+      totalIssues++;
+      if (issue.status === "CLOSED") {
+        closedIssues++;
+      }
+    });
+
+    // Calculer le pourcentage d'avancement
+    const avancement = totalIssues > 0 ? (closedIssues / totalIssues) * 100 : 0;
+    const bgColor = getRandomColor();
+    return {
+      projectId: project.id,
+      avancement: Math.round(avancement),
+      bgColor: bgColor,
+    };
   });
 
   return (
     <>
       <Flex
-        justify="between"
-        align={{ xs: "center" }}
-        mb={"5"}
+        gap={"2"}
         direction={{ initial: "column", xs: "row" }}
-        gap={"5"}
+        justify={"between"}
+        mb={"5"}
       >
-        <Box>
-          <Heading>{titleProject}</Heading>
-          <IssueStatusBadge status={status} />
-        </Box>
-        <Flex gap={"2"} direction={{ initial: "column", xs: "row" }}>
+        <Heading>Projets</Heading>
+        <Box className="flex gap-2 flex-col md:flex-row">
           <DialogProject session={session} />
-          <ProjectFilter
-            key={lastProjectId}
-            projects={projectsAssociatedWithUser}
-            lastProject={lastProjectId}
-            selectAll={false}
-          />
-        </Flex>
+        </Box>
       </Flex>
-      <Grid columns={{ initial: "1", md: "2" }} gap={"5"}>
-        <Flex direction="column" gap={"5"}>
-          <IssueSummary closed={closed} open={open} inProgress={inProgress} />
-          <IssueChart closed={closed} open={open} inProgress={inProgress} />
-        </Flex>
-        <LatestIssue projectId={projectId} />
-      </Grid>
+      <ProjectsTable
+        projects={projectsAssociatedWithUser}
+        totalTimeArray={totalTimeArray}
+        avancement={avancementArray}
+      />
     </>
   );
 };
 
-export default Dashboard;
+export default ProjectsRecapPage;

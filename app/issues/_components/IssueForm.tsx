@@ -1,6 +1,8 @@
 "use client";
 import { ErrorMessage, Spinner } from "@/app/components";
+import { useIssueContext } from "@/app/hooks/useIssueContext";
 import { useProjectContext } from "@/app/hooks/useProjectContext";
+import { convertIntoTotalSecond } from "@/app/utils/service/timeFunction";
 import { issueSchema } from "@/app/validationSchema";
 import { zodResolver } from "@hookform/resolvers/zod";
 import { Issue } from "@prisma/client";
@@ -26,9 +28,10 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
   } = useForm<IssueFormData>({
     resolver: zodResolver(issueSchema),
   });
-  const router = useRouter();
   const { data: session } = useSession();
   const { projectId } = useProjectContext();
+  const { issueTime } = useIssueContext();
+  const router = useRouter();
   const [error, setError] = useState("");
   const [isSubmitting, setIsSubmitting] = useState(false);
 
@@ -36,17 +39,44 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
     try {
       setIsSubmitting(true);
       if (issue) {
+        if (issueTime) {
+          const convertIssueTime = await convertIntoTotalSecond(
+            issueTime as string
+          );
+          data.timer = convertIssueTime;
+        }
         await axios.patch(`/api/issues/${issue.id}`, data);
       } else {
+        if (issueTime) {
+          const convertIssueTime = await convertIntoTotalSecond(
+            issueTime as string
+          );
+          data.timer = convertIssueTime;
+        }
         data.projectId = projectId || undefined;
         data.userId = session?.user?.id;
-        await axios.post("/api/issues", data);
+        // ICI il va falloir creer une route api pour créer la ROW creator ensuite l'assignée à la tache ( user id , id de la tache)
+        const id = session?.user?.id;
+        const res = await axios.post("/api/issues", data);
+
+        if (res?.status === 201) {
+          console.log(res);
+          const issueId = res?.data?.id;
+          console.log(issueId, "ISSUE ID");
+          const resCreator = await axios.post(
+            "/api/creator/" + id + "/issue/" + issueId
+          );
+          console.log(resCreator, " RES CREATOR");
+        }
       }
-      router.push("/issues/list");
-      router.refresh();
-    } catch (error) {
       setIsSubmitting(false);
-      setError("An unexpected error occurred");
+      router.push("/issues/list?projectId=" + projectId);
+      router.refresh();
+    } catch (error: any) {
+      setIsSubmitting(false);
+      console.log(error);
+      // setError("An unexpected error occurred");
+      setError(error.response.data.error);
     }
   });
 
@@ -74,12 +104,12 @@ const IssueForm = ({ issue }: { issue?: Issue }) => {
           control={control}
           defaultValue={issue?.description}
           render={({ field }) => <SimpleMDE {...field} ref={null} />}
-        />{" "}
-        <ErrorMessage>{errors.description?.message}</ErrorMessage>
+        />
+        <ErrorMessage>{errors?.description?.message}</ErrorMessage>
         <Button disabled={isSubmitting}>
           {issue ? "Mettre à jour la tâche" : "Créer une nouvelle tâche"}
           {isSubmitting && <Spinner />}
-        </Button>
+        </Button>{" "}
       </form>
     </Box>
   );

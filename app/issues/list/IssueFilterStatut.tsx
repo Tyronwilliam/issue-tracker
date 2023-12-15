@@ -17,9 +17,11 @@ const IssueFilterStatut = () => {
   const orderBy = searchParams.get("orderBy");
   const user = searchParams.get("user");
   const project = searchParams.get("projectId");
+  const status = searchParams.get("status");
+  
   return (
     <Select.Root
-      defaultValue={searchParams.get("status") || undefined}
+      defaultValue={status || undefined}
       onValueChange={(status) => {
         const paramsObject = {
           status,

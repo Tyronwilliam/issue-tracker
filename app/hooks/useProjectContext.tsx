@@ -1,6 +1,7 @@
 // useProjectContext.tsx
 "use client";
-import React, { createContext, useContext, ReactNode } from "react";
+import { useSearchParams } from "next/navigation";
+import React, { createContext, useContext, ReactNode, useEffect } from "react";
 
 // Définissez le type pour les données de contexte
 type ProjectContextData = {
@@ -13,8 +14,12 @@ const ProjectContext = createContext<ProjectContextData | undefined>(undefined);
 
 // Créez un fournisseur de contexte
 export function ProjectContextProvider({ children }: { children: ReactNode }) {
+  const searchParams = useSearchParams();
   const [projectId, setProjectId] = React.useState<number | null>(null);
-
+  const paramId = searchParams.get("projectId");
+  useEffect(() => {
+    if (paramId) setProjectId(parseInt(paramId));
+  }, []);
   return (
     <ProjectContext.Provider value={{ projectId, setProjectId }}>
       {children}

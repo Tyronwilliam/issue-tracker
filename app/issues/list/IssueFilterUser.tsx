@@ -13,10 +13,10 @@ const IssueFilterUser = ({ users }: { users: User[] }) => {
   const status = searchParams.get("status");
   const project = searchParams.get("projectId");
   const { data: session } = useSession();
-
+  const user = searchParams.get("user");
   return (
     <Select.Root
-      defaultValue={undefined}
+      defaultValue={user || undefined}
       onValueChange={(user) => {
         const paramsObject = {
           status,

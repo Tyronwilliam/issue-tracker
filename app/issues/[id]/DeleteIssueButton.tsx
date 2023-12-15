@@ -1,11 +1,14 @@
 "use client";
 import { Spinner } from "@/app/components";
+import { useProjectContext } from "@/app/hooks/useProjectContext";
 import { AlertDialog, Button, Flex } from "@radix-ui/themes";
 import axios from "axios";
 import { useRouter } from "next/navigation";
 import { useState } from "react";
 
 const DeleteIssueButton = ({ issueId }: { issueId: number }) => {
+  const { setProjectId, projectId } = useProjectContext();
+
   const router = useRouter();
   const [error, setError] = useState(false);
   const [isDeleting, setIsDeleting] = useState(false);
@@ -14,7 +17,10 @@ const DeleteIssueButton = ({ issueId }: { issueId: number }) => {
     try {
       setIsDeleting(true);
       await axios.delete("/api/issues/" + issueId);
-      router.push("/issues/list");
+      if (projectId !== null)
+        router.push("/issues/list" + "?projectId=" + projectId);
+      else router.push("/issues/list");
+
       router.refresh();
     } catch (error) {
       setIsDeleting(false);

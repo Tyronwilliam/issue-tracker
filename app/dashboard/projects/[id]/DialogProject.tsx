@@ -4,10 +4,8 @@ import {
   AlertDialog,
   Button,
   Callout,
-  Card,
   Dialog,
   Flex,
-  Text,
   TextField,
 } from "@radix-ui/themes";
 import axios from "axios";
@@ -16,29 +14,11 @@ import { useRouter } from "next/navigation";
 import { useState } from "react";
 import { useForm } from "react-hook-form";
 import { AiOutlineExclamationCircle } from "react-icons/ai";
-import { z } from "zod";
-import { ErrorMessage, Spinner } from "../components";
-import { useProjectContext } from "../hooks/useProjectContext";
-import { projectSchema } from "../validationSchema";
-import { useTimerContext } from "../hooks/useTimerContext";
-
-export const CreateProject = ({ session }: { session: Session | null }) => {
-  return (
-    <Card>
-      <Flex align={"center"} justify={"center"} direction={"column"} gap={"2"}>
-        <Text align={"center"}>C'est vide par ici...</Text>{" "}
-        <Text align={"center"}>
-          C'est le moment de créer votre premier projet
-        </Text>
-        <DialogProject session={session} />
-      </Flex>
-    </Card>
-  );
-};
-
-type ProjectFormData = z.infer<typeof projectSchema>;
-
-export const DialogProject = ({ session }: { session: Session | null }) => {
+import { ErrorMessage, Spinner } from "../../../components";
+import { useProjectContext } from "../../../hooks/useProjectContext";
+import { projectSchema } from "../../../validationSchema";
+import { ProjectFormData } from "./CreateProject";
+const DialogProject = ({ session }: { session: Session | null }) => {
   const router = useRouter();
 
   const { setProjectId, projectId } = useProjectContext();
@@ -71,7 +51,6 @@ export const DialogProject = ({ session }: { session: Session | null }) => {
   });
   return (
     <>
-      {/* <Button onClick={() => toast.add("HELLO WORD")}>Test Toast</Button>{" "} */}
       {error && (
         <Callout.Root color="red" className="mb-5">
           <Callout.Icon>
@@ -80,15 +59,14 @@ export const DialogProject = ({ session }: { session: Session | null }) => {
           <Callout.Text>{error}</Callout.Text>
         </Callout.Root>
       )}
-      <Dialog.Root open={open} onOpenChange={setOpen}>
+      <Dialog.Root open={open} onOpenChange={setOpen} data-testid="modal">
         <Dialog.Trigger>
-          <Button>Créer un projet</Button>
+          <Button data-testid="trigger">Créer un projet</Button>
         </Dialog.Trigger>
 
         <Dialog.Content style={{ maxWidth: 450 }}>
           <Dialog.Title>Nommer votre projet</Dialog.Title>
           <Dialog.Description size="2" mb="4">
-            {" "}
             Vous n'avez plus qu'un mot à dire... euh écrire !
           </Dialog.Description>{" "}
           <form onSubmit={onSubmit}>
@@ -109,7 +87,7 @@ export const DialogProject = ({ session }: { session: Session | null }) => {
     </>
   );
 };
-
+export default DialogProject;
 const Alert = () => {
   return (
     <AlertDialog.Root>

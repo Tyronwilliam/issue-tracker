@@ -1,7 +1,7 @@
-import { NextRequest, NextResponse } from "next/server";
 import prisma from "@/prisma/client";
-import { issueSchema } from "../../validationSchema";
 import { getServerSession } from "next-auth";
+import { NextRequest, NextResponse } from "next/server";
+import { issueSchema } from "../../validationSchema";
 import { authOptions } from "../auth/[...nextauth]/route";
 export async function POST(request: NextRequest) {
   const session = await getServerSession(authOptions);
@@ -14,13 +14,41 @@ export async function POST(request: NextRequest) {
       status: 400,
     });
   }
-  const { userId, projectId } = body; // Replace with how you retrieve the user's ID
+  const { userId, projectId, title, description, timer } = body; // Replace with how you retrieve the user's ID
+  const projects = await prisma.project.findMany({
+    where: {
+      user: {
+        some: {
+          id: userId,
+        },
+      },
+    },
+  });
+  const isProjectAssignToUser = projects.some((el) => el.id === projectId);
 
+  if (typeof projectId === "number") {
+    if (!isProjectAssignToUser) {
+      return NextResponse.json(
+        { error: "Invalid project id" },
+        {
+          status: 400,
+        }
+      );
+    }
+  }
+
+  // let creatorId;
+
+  // if (creator) {
+  //   creatorId = parseInt(creator);
+  // }
   const newIssue = await prisma.issue.create({
     data: {
-      title: body.title,
-      description: body.description,
-      projectId: projectId,
+      title,
+      description,
+      projectId,
+      timer,
+      // creator: creator && creatorId,
       users: {
         connect: { id: userId }, // Connect the issue with the user
       },
@@ -28,4 +56,16 @@ export async function POST(request: NextRequest) {
   });
 
   return NextResponse.json(newIssue, { status: 201 });
+}
+
+export async function GET(request: NextRequest) {
+  const session = await getServerSession(authOptions);
+  if (!session) return NextResponse.json({}, { status: 401 });
+
+  const issues = await prisma.issue.findMany({
+    include: {
+      Project: true,
+    },
+  });
+  return NextResponse.json(issues, { status: 200 });
 }

@@ -1,34 +1,37 @@
 import { authOptions } from "@/app/api/auth/[...nextauth]/route";
 import CreateIssueUI from "@/app/components/CreateIssueUI";
 import Pagination from "@/app/components/Pagination";
-import ProjectFilter from "@/app/dashboard/ProjectFilter";
+import ProjectFilter from "@/app/issues/list/ProjectFilter";
 import { getProjectsAssociatedWithUser } from "@/app/utils/service/userRelation";
 import prisma from "@/prisma/client";
-import { Status } from "@prisma/client";
+import { CategorieCustom, Issue, Project, Status } from "@prisma/client";
 import { Flex } from "@radix-ui/themes";
 import { getServerSession } from "next-auth";
 import IssueAction from "./IssueAction";
 import IssueFilterStatut from "./IssueFilterStatut";
 import IssueFilterUser from "./IssueFilterUser";
-import IssueTable, {
-  IssueQuery,
-  IssueWithProject,
-  columnName,
-} from "./IssueTable";
+import IssueTable, { IssueQuery, columnName } from "./IssueTable";
+
+export type IssueWithProjectAndCategory = Issue & {
+  Project?: Project;
+  categorie?: CategorieCustom[];
+};
+
 const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
   const session = await getServerSession(authOptions);
 
   const projectsAssociatedWithUser = await getProjectsAssociatedWithUser(
     session
   );
-  const projectId = parseInt(searchParams.projectId);
 
+  const projectId = parseInt(searchParams.projectId);
   const projectIndex = projectsAssociatedWithUser.findIndex(
     (project) => project.id === projectId
   );
   const isIndexValid = projectIndex !== -1;
 
   const realId = isIndexValid ? projectId : undefined;
+
   const page = parseInt(searchParams.page) || 1;
   const pageSize = 10;
 
@@ -39,7 +42,10 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
 
   const userId = searchParams.user;
   const orderBy = columnName.includes(searchParams.orderBy)
-    ? { [searchParams.orderBy]: "asc" }
+    ? {
+        [searchParams.orderBy]:
+          (searchParams?.tri && searchParams?.tri) || "asc",
+      }
     : undefined;
 
   const users = {
@@ -65,8 +71,9 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
     take: pageSize,
     include: {
       Project: true,
+      categorie: true,
     },
-  })) as IssueWithProject[];
+  })) as IssueWithProjectAndCategory[];
 
   const allUsers = await prisma.user.findMany({ orderBy: { name: "asc" } });
 
@@ -84,13 +91,13 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
       users,
     },
   });
-
+  const allCategorie = await prisma.categorieCustom.findMany();
   return (
     <>
       {allIssueFromUser.length === 0 ? (
         <CreateIssueUI />
       ) : (
-        <Flex direction="column" gap="5">
+        <Flex direction="column" gap="5" className="relative">
           <Flex
             justify="between"
             direction={{ initial: "column", sm: "row" }}
@@ -103,14 +110,16 @@ const IssuesPage = async ({ searchParams }: { searchParams: IssueQuery }) => {
             >
               <IssueFilterStatut />
               <IssueFilterUser users={allUsers} />
-              <ProjectFilter
-                projects={projectsAssociatedWithUser}
-                selectAll={true}
-              />
+              <ProjectFilter projects={projectsAssociatedWithUser} />
             </Flex>
             <IssueAction />
           </Flex>
-          <IssueTable searchParams={searchParams} issues={issues} />
+          <IssueTable
+            searchParams={searchParams}
+            issues={issues}
+            projectsAssociatedWithUser={projectsAssociatedWithUser}
+            allCategorie={allCategorie}
+          />
           <Pagination
             itemCount={issueCount}
             pageSize={pageSize}
